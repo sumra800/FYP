@@ -1,16 +1,18 @@
 ﻿import React, { useState, useEffect } from "react"
 import "./App.css";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import LandingPage from "./Components/landing/landingPage";
 import LoginPage from "./Components/login/loginPage";
 import SignupPage from "./Components/signup/signupPage";
 import ProfilePage from "./Components/profile/profilePage";
 import DashboardPage from "./Components/dashboard/dashboardPage";
 import ProductivityPage from "./Components/productivity/productivityPage";
+import CodingSpacePage from "./Components/codingSpace/codingSpacePage";
 
 // Main App Component with Authentication Logic
 const AppContent = () => {
   const { isAuthenticated, isLoading, user } = useAuth();
-  const [currentPage, setCurrentPage] = useState("login");
+  const [currentPage, setCurrentPage] = useState("landing");
 
   // Update current page based on authentication status
   useEffect(() => {
@@ -23,10 +25,15 @@ const AppContent = () => {
           setCurrentPage("dashboard");
         }
       } else {
-        setCurrentPage("login");
+        // Keep landing page for unauthenticated users
+        setCurrentPage("landing");
       }
     }
   }, [isAuthenticated, isLoading, user]);
+
+  const navigateToLanding = () => {
+    setCurrentPage("landing");
+  };
 
   const navigateToSignup = () => {
     setCurrentPage("signup");
@@ -48,6 +55,10 @@ const AppContent = () => {
     setCurrentPage("productivity");
   };
 
+  const navigateToCodingSpace = () => {
+    setCurrentPage("coding-space");
+  };
+
   // Show loading spinner while checking authentication
   if (isLoading) {
     return (
@@ -60,20 +71,26 @@ const AppContent = () => {
 
   return (
     <div className="App">
+      {currentPage === "landing" && (
+        <LandingPage onNavigateToSignup={navigateToSignup} onNavigateToLogin={navigateToLogin} />
+      )}
       {currentPage === "login" && (
-        <LoginPage onNavigateToSignup={navigateToSignup} />
+        <LoginPage onNavigateToSignup={navigateToSignup} onNavigateToLanding={navigateToLanding} />
       )}
       {currentPage === "signup" && (
-        <SignupPage onNavigateToLogin={navigateToLogin} onNavigateToProfile={navigateToProfile} />
+        <SignupPage onNavigateToLogin={navigateToLogin} onNavigateToProfile={navigateToProfile} onNavigateToLanding={navigateToLanding} />
       )}
       {currentPage === "profile" && (
-        <ProfilePage onNavigateToDashboard={navigateToDashboard} />
+        <ProfilePage onNavigateToDashboard={navigateToDashboard} onNavigateToLanding={navigateToLanding} />
       )}
       {currentPage === "dashboard" && (
-        <DashboardPage onNavigateToProfile={navigateToProfile} onNavigateToProductivity={navigateToProductivity} />
+        <DashboardPage onNavigateToProfile={navigateToProfile} onNavigateToProductivity={navigateToProductivity} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToLanding={navigateToLanding} />
       )}
       {currentPage === "productivity" && (
-        <ProductivityPage onNavigateToDashboard={navigateToDashboard} />
+        <ProductivityPage onNavigateToDashboard={navigateToDashboard} onNavigateToLanding={navigateToLanding} />
+      )}
+      {currentPage === "coding-space" && (
+        <CodingSpacePage onNavigateToDashboard={navigateToDashboard} onNavigateToLanding={navigateToLanding} />
       )}
     </div>
   );

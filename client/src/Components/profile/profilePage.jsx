@@ -2,8 +2,8 @@
 import { useAuth } from "../../context/AuthContext";
 import "./profilePage.css";
 
-const ProfilePage = ({ onNavigateToDashboard }) => {
-  const { user, updateProfile, isLoading, error, clearError } = useAuth();
+const ProfilePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
+  const { user, updateProfile, isLoading, error, clearError, logout } = useAuth();
   const [formData, setFormData] = useState({
     nickname: "",
     currentSemester: "",
@@ -14,6 +14,7 @@ const ProfilePage = ({ onNavigateToDashboard }) => {
   });
   const [validationErrors, setValidationErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
 
   // Load user data when component mounts
   useEffect(() => {
@@ -26,6 +27,11 @@ const ProfilePage = ({ onNavigateToDashboard }) => {
         personalDescription: user.personalDescription || "",
         profilePicture: user.profilePicture || null
       });
+      
+      // Set preview image if user has a profile picture
+      if (user.profilePicture) {
+        setPreviewImage(user.profilePicture);
+      }
     }
   }, [user]);
 
@@ -54,10 +60,20 @@ const ProfilePage = ({ onNavigateToDashboard }) => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      profilePicture: e.target.files[0]
-    });
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({
+        ...formData,
+        profilePicture: file
+      });
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handlePersonaSelect = (persona) => {
@@ -126,6 +142,9 @@ const ProfilePage = ({ onNavigateToDashboard }) => {
         personalDescription: user.personalDescription || "",
         profilePicture: user.profilePicture || null
       });
+      
+      // Reset preview image
+      setPreviewImage(user.profilePicture || null);
     }
     
     // Clear errors and messages
@@ -138,13 +157,25 @@ const ProfilePage = ({ onNavigateToDashboard }) => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    onNavigateToLanding();
+  };
+
+  // Helper function to construct proper image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    if (imagePath.startsWith('http')) return imagePath;
+    return `http://localhost:7000${imagePath}`;
+  };
+
   return (
     <div className="profile-page">
       {/* Header */}
       <header className="header">
         <div className="header-content">
           <div className="logo">
-            <div className="logo-icon"></div>
+            <div className="logo-icon">📚</div>
             <span className="logo-text">Study Buddy</span>
           </div>
           
@@ -152,6 +183,10 @@ const ProfilePage = ({ onNavigateToDashboard }) => {
             <button className="back-btn" onClick={onNavigateToDashboard}>
               <span className="back-arrow"></span>
               Back to Dashboard
+            </button>
+            <button className="logout-btn" onClick={handleLogout}>
+              <span className="logout-icon">🚪</span>
+              Logout
             </button>
           </div>
         </div>
@@ -288,9 +323,25 @@ const ProfilePage = ({ onNavigateToDashboard }) => {
                   disabled={isLoading}
                 />
                 <label htmlFor="profile-picture" className="file-upload-label">
-                  <div className="upload-icon"></div>
-                  <div className="upload-text">Upload a file or drag and drop</div>
-                  <div className="upload-info">PNG, JPG, GIF up to 10MB</div>
+                  {previewImage ? (
+                    <div className="image-preview">
+                      <img 
+                        src={getImageUrl(previewImage)} 
+                        alt="Profile preview" 
+                        className="preview-img" 
+                      />
+                      <div className="preview-overlay">
+                        <div className="upload-icon">📷</div>
+                        <div className="upload-text">Click to change image</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="upload-placeholder">
+                      <div className="upload-icon">☁️</div>
+                      <div className="upload-text">Upload a file or drag and drop</div>
+                      <div className="upload-info">PNG, JPG, GIF up to 10MB</div>
+                    </div>
+                  )}
                 </label>
               </div>
             </div>

@@ -1,8 +1,10 @@
 ﻿
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 import "./productivityPage.css";
 
-const ProductivityPage = ({ onNavigateToDashboard }) => {
+const ProductivityPage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
+  const { logout } = useAuth();
   const [timer, setTimer] = useState({ hours: 0, minutes: 25, seconds: 0 });
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -128,6 +130,11 @@ const ProductivityPage = ({ onNavigateToDashboard }) => {
     return value.toString().padStart(2, "0");
   };
 
+  const handleLogout = () => {
+    logout();
+    onNavigateToLanding();
+  };
+
   return (
     <div className="productivity-page">
       {/* Top Header */}
@@ -140,7 +147,7 @@ const ProductivityPage = ({ onNavigateToDashboard }) => {
           
           <nav className="nav-links">
             <button className="nav-link" onClick={onNavigateToDashboard}>
-              <span className="nav-icon">⊞</span>
+              <span className="nav-icon">🏠</span>
               Dashboard
             </button>
             <button className="nav-link">
@@ -149,15 +156,19 @@ const ProductivityPage = ({ onNavigateToDashboard }) => {
             </button>
             <button className="nav-link">
               <span className="nav-icon">&lt;/&gt;</span>
-              Coding
+              Coding Environment
             </button>
             <button className="nav-link active">
-              <span className="nav-icon">🕐</span>
-              Productivity
+              <span className="nav-icon">📋</span>
+              Productivity Tools
             </button>
             <button className="nav-link">
               <span className="nav-icon">❓</span>
-              Ask-A-Senior
+              Ask-A-Senior Assistant  
+            </button>
+            <button className="nav-link logout-link" onClick={handleLogout}>
+              <span className="nav-icon">🚪</span>
+              Logout
             </button>
           </nav>
         </div>

@@ -85,10 +85,45 @@ export const userAPI = {
 
   // Update user profile
   updateProfile: async (profileData) => {
-    return await apiRequest('/users/profile', {
-      method: 'PUT',
-      body: JSON.stringify(profileData),
+    const url = `${API_BASE_URL}/users/profile`;
+    const token = getAuthToken();
+    
+    // Create FormData for file uploads
+    const formData = new FormData();
+    
+    // Add text fields
+    Object.keys(profileData).forEach(key => {
+      if (profileData[key] !== null && profileData[key] !== undefined) {
+        if (key === 'profilePicture' && profileData[key] instanceof File) {
+          formData.append(key, profileData[key]);
+        } else if (key !== 'profilePicture') {
+          formData.append(key, profileData[key]);
+        }
+      }
     });
+
+    const config = {
+      method: 'PUT',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+        // Don't set Content-Type for FormData, let browser set it with boundary
+      },
+      body: formData,
+    };
+
+    try {
+      const response = await fetch(url, config);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   },
 
   // Logout user (remove token)
@@ -104,6 +139,182 @@ export const userAPI = {
   // Get stored token
   getToken: () => {
     return getAuthToken();
+  }
+};
+
+// Assignment API functions
+export const assignmentAPI = {
+  // Create a new assignment
+  createAssignment: async (assignmentData) => {
+    return await apiRequest('/assignments', {
+      method: 'POST',
+      body: JSON.stringify(assignmentData),
+    });
+  },
+
+  // Get all assignments for the user
+  getAssignments: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters);
+    const endpoint = queryParams.toString() ? `/assignments?${queryParams}` : '/assignments';
+    return await apiRequest(endpoint, {
+      method: 'GET',
+    });
+  },
+
+  // Get a single assignment
+  getAssignment: async (id) => {
+    return await apiRequest(`/assignments/${id}`, {
+      method: 'GET',
+    });
+  },
+
+  // Update an assignment
+  updateAssignment: async (id, assignmentData) => {
+    return await apiRequest(`/assignments/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(assignmentData),
+    });
+  },
+
+  // Delete an assignment
+  deleteAssignment: async (id) => {
+    return await apiRequest(`/assignments/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Get assignment statistics
+  getAssignmentStats: async () => {
+    return await apiRequest('/assignments/stats', {
+      method: 'GET',
+    });
+  }
+};
+
+// Reminder API functions
+export const reminderAPI = {
+  // Create a new reminder
+  createReminder: async (reminderData) => {
+    return await apiRequest('/reminders', {
+      method: 'POST',
+      body: JSON.stringify(reminderData),
+    });
+  },
+
+  // Get all reminders for the user
+  getReminders: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters);
+    const endpoint = queryParams.toString() ? `/reminders?${queryParams}` : '/reminders';
+    return await apiRequest(endpoint, {
+      method: 'GET',
+    });
+  },
+
+  // Get upcoming reminders
+  getUpcomingReminders: async (hours = 24) => {
+    return await apiRequest(`/reminders/upcoming?hours=${hours}`, {
+      method: 'GET',
+    });
+  },
+
+  // Get a single reminder
+  getReminder: async (id) => {
+    return await apiRequest(`/reminders/${id}`, {
+      method: 'GET',
+    });
+  },
+
+  // Update a reminder
+  updateReminder: async (id, reminderData) => {
+    return await apiRequest(`/reminders/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(reminderData),
+    });
+  },
+
+  // Mark reminder as completed
+  markReminderCompleted: async (id) => {
+    return await apiRequest(`/reminders/${id}/complete`, {
+      method: 'PUT',
+    });
+  },
+
+  // Delete a reminder
+  deleteReminder: async (id) => {
+    return await apiRequest(`/reminders/${id}`, {
+      method: 'DELETE',
+    });
+  }
+};
+
+// Code API functions
+export const codeAPI = {
+  // Create a new code snippet
+  createCode: async (codeData) => {
+    return await apiRequest('/codes', {
+      method: 'POST',
+      body: JSON.stringify(codeData),
+    });
+  },
+
+  // Get all public code snippets
+  getAllCodes: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters).toString();
+    return await apiRequest(`/codes${queryParams ? `?${queryParams}` : ''}`, {
+      method: 'GET',
+    });
+  },
+
+  // Get a single code snippet with full details
+  getCode: async (id) => {
+    return await apiRequest(`/codes/${id}`, {
+      method: 'GET',
+    });
+  },
+
+  // Get user's own code snippets
+  getUserCodes: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters).toString();
+    return await apiRequest(`/codes/user/my-codes${queryParams ? `?${queryParams}` : ''}`, {
+      method: 'GET',
+    });
+  },
+
+  // Update a code snippet
+  updateCode: async (id, codeData) => {
+    return await apiRequest(`/codes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(codeData),
+    });
+  },
+
+  // Delete a code snippet
+  deleteCode: async (id) => {
+    return await apiRequest(`/codes/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Add a comment to a code snippet
+  addComment: async (id, comment) => {
+    return await apiRequest(`/codes/${id}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ comment }),
+    });
+  },
+
+  // Like/Unlike a code snippet
+  toggleLike: async (id) => {
+    return await apiRequest(`/codes/${id}/like`, {
+      method: 'POST',
+    });
+  },
+
+  // Get code statistics
+  getCodeStats: async () => {
+    return await apiRequest('/codes/stats', {
+      method: 'GET',
+    });
   }
 };
 

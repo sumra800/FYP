@@ -1,0 +1,268 @@
+/* Landing Page Styles */
+
+.landing-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Header Styles */
+.header {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem 0;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.logo-icon {
+  font-size: 2rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.3s ease;
+}
+
+.nav-link:hover {
+  opacity: 0.8;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.hero-section {
+  max-width: 1200px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.hero-content {
+  color: white;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  opacity: 0.8;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.register-btn-hero,
+.login-btn-hero {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.register-btn-hero {
+  background: #ff6b6b;
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+}
+
+.register-btn-hero:hover {
+  background: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+}
+
+.login-btn-hero {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.login-btn-hero:hover {
+  background: white;
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Polaroid Card Styles - scoped classnames start with pc- */
+
+/* overall card wrapper (polaroid) */
+.pc-wrapper {
+  width: 520px;
+  max-width: 90vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+/* outer thin border that forms the polaroid frame */
+.pc-frame {
+  border: 14px solid;
+  box-sizing: border-box;
+  height: 420px;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  position: relative;
+  background-clip: padding-box;
+}
+
+/* the picture area inside frame */
+.pc-picture {
+  margin: 6px 6px 0 6px;
+  background-color: #0062ad;
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  touch-action: none; /* allow touchmove to be read reliably */
+}
+
+/* eyes container to position the two circles side-by-side */
+.pc-eyes {
+  width: 74%;
+  max-width: 420px;
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-6%);
+}
+
+/* big off-white eye circles */
+.pc-eye {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: #F8EEDD;
+  position: relative;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* left/right adjustments approximate the picture */
+.pc-eye--left { align-items: flex-start; justify-content: flex-start; }
+.pc-eye--right { align-items: flex-start; justify-content: flex-end; }
+
+/* pupils (black circles) */
+.pc-pupil {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #000;
+  /* start centered via transform and allow smooth transitions during movement */
+  transform: translate3d(0, 0, 0);
+  transition: transform 120ms linear;
+  will-change: transform;
+}
+
+/* footer (the bottom cream area with large hex and texts) */
+.pc-footer {
+  border: 0;
+  padding: 28px 28px 30px 28px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* large hex text */
+.pc-hex {
+  font-size: 56px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin: 0;
+  line-height: 1;
+}
+
+/* title smaller */
+.pc-title {
+  font-size: 18px;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+/* subtext */
+.pc-sub {
+  font-size: 13px;
+  color: rgba(0,0,0,0.85);
+  margin-top: 18px;
+}
+
+/* Responsiveness: scale down on small devices */
+@media (max-width: 520px) {
+  .pc-wrapper { width: 360px; }
+  .pc-frame { height: 320px; }
+  .pc-eye { width: 120px; height: 120px; }
+  .pc-pupil { width: 48px; height: 48px; margin: 14px; }
+  .pc-hex { font-size: 36px; }
+}

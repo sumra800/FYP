@@ -2,7 +2,7 @@
 import { useAuth } from "../../context/AuthContext";
 import "./loginPage.css";
 
-const LoginPage = ({ onNavigateToSignup }) => {
+const LoginPage = ({ onNavigateToSignup, onNavigateToLanding }) => {
   const { login, isLoading, error, clearError } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
@@ -71,7 +71,7 @@ const LoginPage = ({ onNavigateToSignup }) => {
       {/* Header */}
       <header className="header">
         <div className="header-content">
-          <div className="logo">
+          <div className="logo" onClick={onNavigateToLanding} style={{ cursor: 'pointer' }}>
             <div className="logo-icon">📚</div>
             <span className="logo-text">Study Buddy</span>
           </div>

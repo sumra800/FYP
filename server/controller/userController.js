@@ -1,5 +1,39 @@
 ﻿import User from "../model/userModel.js";
 import jwt from "jsonwebtoken";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(process.cwd(), 'uploads');
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
+};
+
+export const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
 
 // Generate JWT Token
 const generateToken = (userId) => {
@@ -186,13 +220,28 @@ export const updateProfile = async (req, res) => {
     if (studyPersona !== undefined) updateData.studyPersona = studyPersona;
     if (personalDescription !== undefined) updateData.personalDescription = personalDescription.trim();
 
-    const user = await User.findByIdAndUpdate(
+    // Handle file upload
+    if (req.file) {
+      // Delete old profile picture if exists
+      const user = await User.findById(req.userId);
+      if (user && user.profilePicture) {
+        const oldFilePath = path.join(process.cwd(), 'uploads', path.basename(user.profilePicture));
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
+      }
+      
+      // Update with new profile picture path
+      updateData.profilePicture = `/uploads/${req.file.filename}`;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
       req.userId,
       updateData,
       { new: true, runValidators: true }
     );
 
-    if (!user) {
+    if (!updatedUser) {
       return res.status(404).json({
         success: false,
         message: "User not found"
@@ -202,7 +251,7 @@ export const updateProfile = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
-      user: user.toJSON()
+      user: updatedUser.toJSON()
     });
 
   } catch (error) {
