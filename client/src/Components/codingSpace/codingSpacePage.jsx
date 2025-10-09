@@ -202,6 +202,42 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
   return (
     <div className="coding-space-page">
       {/* Header */}
+      <header className="top-header">
+        <div className="header-content">
+          <div className="logo">
+            <div className="logo-icon">📚</div>
+            <span className="logo-text">Study Buddy</span>
+          </div>
+          
+          <nav className="nav-links">
+            <button className="nav-link" onClick={onNavigateToDashboard}>
+              <span className="nav-icon">🏠</span>
+              Dashboard
+            </button>
+            <button className="nav-link">
+              <span className="nav-icon">👥</span>
+              Study Partners
+            </button>
+            <button className="nav-link active">
+              <span className="nav-icon">&lt;/&gt;</span>
+              Coding Environment
+            </button>
+            <button className="nav-link">
+              <span className="nav-icon">📋</span>
+              Productivity Tools
+            </button>
+            <button className="nav-link">
+              <span className="nav-icon">❓</span>
+              Ask-A-Senior Assistant  
+            </button>
+            <button className="nav-link logout-link" onClick={handleLogout}>
+              <span className="nav-icon">🚪</span>
+              Logout
+            </button>
+          </nav>
+        </div>
+      </header>
+
       <header className="coding-header">
         <div className="header-content">
           <div className="logo">
@@ -213,10 +249,6 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
             <button className="upload-btn" onClick={() => setShowUploadForm(!showUploadForm)}>
               <span className="btn-icon">📤</span>
               Upload Code
-            </button>
-            <button className="logout-btn" onClick={handleLogout}>
-              <span className="btn-icon">🚪</span>
-              Logout
             </button>
           </div>
         </div>

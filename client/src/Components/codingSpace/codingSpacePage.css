@@ -5,6 +5,21 @@
   box-sizing: border-box;
 }
 
+.top-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 0;
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .coding-space-page {
   min-height: 100vh;
   display: flex;
