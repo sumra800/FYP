@@ -315,6 +315,98 @@ export const codeAPI = {
     return await apiRequest('/codes/stats', {
       method: 'GET',
     });
+  },
+
+  // Approve a comment
+  approveComment: async (codeId, commentId) => {
+    return await apiRequest(`/codes/${codeId}/comments/${commentId}/approve`, {
+      method: 'POST',
+    });
+  },
+
+  // Get user leaderboard
+  getLeaderboard: async (limit = 10) => {
+    return await apiRequest(`/codes/leaderboard?limit=${limit}`, {
+      method: 'GET',
+    });
+  }
+};
+
+// Event API functions
+export const eventAPI = {
+  // Create a new event
+  createEvent: async (eventData) => {
+    return await apiRequest('/events', {
+      method: 'POST',
+      body: JSON.stringify(eventData),
+    });
+  },
+
+  // Get all events with filtering
+  getAllEvents: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters).toString();
+    return await apiRequest(`/events${queryParams ? `?${queryParams}` : ''}`, {
+      method: 'GET',
+    });
+  },
+
+  // Get a single event by ID
+  getEvent: async (id) => {
+    return await apiRequest(`/events/${id}`, {
+      method: 'GET',
+    });
+  },
+
+  // Get user's created events
+  getUserEvents: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters).toString();
+    return await apiRequest(`/events/user/my-events${queryParams ? `?${queryParams}` : ''}`, {
+      method: 'GET',
+    });
+  },
+
+  // Get user's registered events
+  getUserRegisteredEvents: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters).toString();
+    return await apiRequest(`/events/user/registered${queryParams ? `?${queryParams}` : ''}`, {
+      method: 'GET',
+    });
+  },
+
+  // Update an event
+  updateEvent: async (id, eventData) => {
+    return await apiRequest(`/events/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(eventData),
+    });
+  },
+
+  // Delete an event
+  deleteEvent: async (id) => {
+    return await apiRequest(`/events/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Register for an event
+  registerForEvent: async (id) => {
+    return await apiRequest(`/events/${id}/register`, {
+      method: 'POST',
+    });
+  },
+
+  // Unregister from an event
+  unregisterFromEvent: async (id) => {
+    return await apiRequest(`/events/${id}/unregister`, {
+      method: 'POST',
+    });
+  },
+
+  // Get event statistics
+  getEventStats: async () => {
+    return await apiRequest('/events/stats', {
+      method: 'GET',
+    });
   }
 };
 

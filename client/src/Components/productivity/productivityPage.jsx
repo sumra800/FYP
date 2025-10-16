@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import "./productivityPage.css";
 
-const ProductivityPage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
+const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigateToLanding }) => {
   const { logout } = useAuth();
   const [timer, setTimer] = useState({ hours: 0, minutes: 25, seconds: 0 });
   const [isRunning, setIsRunning] = useState(false);
@@ -154,7 +154,7 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
               <span className="nav-icon">👥</span>
               Study Partners
             </button>
-            <button className="nav-link">
+            <button className="nav-link" onClick={onNavigateToCodingSpace}>
               <span className="nav-icon">&lt;/&gt;</span>
               Coding Environment
             </button>

@@ -1,7 +1,7 @@
 ﻿
 import React, { useState, useEffect } from "react"
 import { useAuth } from "../../context/AuthContext";
-import { assignmentAPI, reminderAPI } from "../../services/api";
+import { assignmentAPI, reminderAPI, eventAPI } from "../../services/api";
 import "./dashboardPage.css";
 
 const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNavigateToCodingSpace, onNavigateToLanding }) => {
@@ -16,6 +16,7 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddReminderForm, setShowAddReminderForm] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState(false);
   const [newAssignment, setNewAssignment] = useState({
     title: "",
     description: "",
@@ -35,6 +36,29 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
   const [alerts, setAlerts] = useState([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [alarmSound, setAlarmSound] = useState(null);
+  
+  // Event-related state
+  const [events, setEvents] = useState([]);
+  const [eventLoading, setEventLoading] = useState(true);
+  const [eventError, setEventError] = useState(null);
+  const [showAddEventForm, setShowAddEventForm] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    description: "",
+    eventType: "seminar",
+    organizer: "",
+    location: "",
+    eventDate: "",
+    startTime: "",
+    endTime: "",
+    maxAttendees: "",
+    tags: "",
+    registrationRequired: false,
+    registrationDeadline: "",
+    contactEmail: "",
+    contactPhone: "",
+    isFeatured: false
+  });
 
   // Initialize alarm sound
   useEffect(() => {
@@ -382,6 +406,29 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
     setSidebarOpen(!sidebarOpen);
   };
 
+  const toggleHamburgerMenu = () => {
+    setHamburgerMenuOpen(!hamburgerMenuOpen);
+  };
+
+  // Close hamburger menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (hamburgerMenuOpen && !event.target.closest('.hamburger-menu')) {
+        setHamburgerMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [hamburgerMenuOpen]);
+
+  // Fetch events on component mount
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
   // Helper function to construct proper image URL
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
@@ -389,16 +436,117 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
     return `http://localhost:7000${imagePath}`;
   };
 
+  // Event-related functions
+  const fetchEvents = async () => {
+    setEventLoading(true);
+    try {
+      const response = await eventAPI.getAllEvents({ 
+        isUpcoming: 'true', 
+        sortBy: 'eventDate', 
+        sortOrder: 'asc',
+        limit: 20
+      });
+      setEvents(response.events);
+      setEventError(null);
+    } catch (err) {
+      console.error("Error fetching events:", err);
+      setEventError("Failed to load events.");
+    } finally {
+      setEventLoading(false);
+    }
+  };
+
+  const handleEventInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNewEvent(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleAddEvent = async (e) => {
+    e.preventDefault();
+    try {
+      const tagsArray = newEvent.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+      const eventData = {
+        ...newEvent,
+        tags: tagsArray,
+        maxAttendees: newEvent.maxAttendees ? parseInt(newEvent.maxAttendees) : null,
+        registrationDeadline: newEvent.registrationDeadline || null
+      };
+      
+      await eventAPI.createEvent(eventData);
+      setNewEvent({
+        title: "",
+        description: "",
+        eventType: "seminar",
+        organizer: "",
+        location: "",
+        eventDate: "",
+        startTime: "",
+        endTime: "",
+        maxAttendees: "",
+        tags: "",
+        registrationRequired: false,
+        registrationDeadline: "",
+        contactEmail: "",
+        contactPhone: "",
+        isFeatured: false
+      });
+      setShowAddEventForm(false);
+      fetchEvents();
+    } catch (err) {
+      console.error("Error creating event:", err);
+      setEventError("Failed to create event.");
+    }
+  };
+
+  const handleRegisterForEvent = async (eventId) => {
+    try {
+      await eventAPI.registerForEvent(eventId);
+      fetchEvents(); // Refresh events to update registration status
+    } catch (err) {
+      console.error("Error registering for event:", err);
+      setEventError("Failed to register for event.");
+    }
+  };
+
+  const handleUnregisterFromEvent = async (eventId) => {
+    try {
+      await eventAPI.unregisterFromEvent(eventId);
+      fetchEvents(); // Refresh events to update registration status
+    } catch (err) {
+      console.error("Error unregistering from event:", err);
+      setEventError("Failed to unregister from event.");
+    }
+  };
+
+  const formatEventDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  const formatEventTime = (timeString) => {
+    const [hours, minutes] = timeString.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
+
+  const isUserRegistered = (event) => {
+    return event.attendees && event.attendees.some(attendee => 
+      attendee._id === user._id || attendee === user._id
+    );
+  };
+
   return (
     <div className="dashboard-page">
-      {/* Debug Info */}
-      {process.env.NODE_ENV === 'development' && (
-        <div style={{position: 'fixed', top: '10px', left: '10px', background: 'rgba(0,0,0,0.8)', color: 'white', padding: '10px', borderRadius: '5px', zIndex: 9999, fontSize: '12px'}}>
-          <div>Alerts: {alerts.length}</div>
-          <div>Sound: {soundEnabled ? 'ON' : 'OFF'}</div>
-          <div>Current time: {new Date().toLocaleString()}</div>
-        </div>
-      )}
 
       {/* Alert Notifications - Floating Clouds */}
       {alerts.length > 0 && (
@@ -441,16 +589,60 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
       {/* Top Header */}
       <header className="top-header">
         <div className="header-content">
+          {/* Hamburger Menu */}
+          <div className="hamburger-menu">
+            <button className="hamburger-btn" onClick={toggleHamburgerMenu}>
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+            </button>
+            
+            {/* Dropdown Menu */}
+            {hamburgerMenuOpen && (
+              <div className="hamburger-dropdown">
+                <button className="dropdown-item" onClick={() => { setActiveTab("dashboard"); setHamburgerMenuOpen(false); }}>
+                  <span className="dropdown-icon">🏠</span>
+                  Dashboard
+                </button>
+                <button className="dropdown-item" onClick={() => { setHamburgerMenuOpen(false); }}>
+                  <span className="dropdown-icon">👥</span>
+                  Study Partners
+                </button>
+                <button className="dropdown-item" onClick={() => { onNavigateToCodingSpace(); setHamburgerMenuOpen(false); }}>
+                  <span className="dropdown-icon">&lt;/&gt;</span>
+                  Coding Environment
+                </button>
+                <button className="dropdown-item" onClick={() => { onNavigateToProductivity(); setHamburgerMenuOpen(false); }}>
+                  <span className="dropdown-icon">📋</span>
+                  Productivity Tools
+                </button>
+                <button className="dropdown-item" onClick={() => { setHamburgerMenuOpen(false); }}>
+                  <span className="dropdown-icon">❓</span>
+                  Ask-A-Senior Assistant
+                </button>
+                <div className="dropdown-divider"></div>
+                <button className="dropdown-item" onClick={toggleSidebar}>
+                  <span className="dropdown-icon">{sidebarOpen ? "◀" : "▶"}</span>
+                  {sidebarOpen ? "Hide" : "Show"} Sidebar
+                </button>
+                <button className="dropdown-item" onClick={onNavigateToProfile}>
+                  <span className="dropdown-icon">👤</span>
+                  Edit Profile
+                </button>
+                <button className="dropdown-item" onClick={handleLogout}>
+                  <span className="dropdown-icon">🚪</span>
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="logo">
             <div className="logo-icon">📚</div>
             <span className="logo-text">Study Buddy</span>
           </div>
           
           <div className="header-actions">
-            <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
-              <span className="btn-icon">{sidebarOpen ? "◀" : "▶"}</span>
-              {sidebarOpen ? "Hide" : "Show"} Sidebar
-            </button>
             <button 
               className={`sound-toggle-btn ${soundEnabled ? 'enabled' : 'disabled'}`} 
               onClick={toggleSound}
@@ -466,14 +658,6 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
             >
               <span className="btn-icon">🧪</span>
               Test Alert
-            </button>
-            <button className="edit-profile-btn" onClick={onNavigateToProfile}>
-              <span className="btn-icon">👤</span>
-              Edit Profile
-            </button>
-            <button className="logout-btn" onClick={handleLogout}>
-              <span className="btn-icon">🚪</span>
-              Logout
             </button>
           </div>
         </div>
@@ -925,6 +1109,249 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                     Consider scheduling more study sessions during these days.
                   </p>
                 </div>
+              </div>
+
+              {/* Explore Section - University Events & Seminars */}
+              <div className="explore-section">
+                <div className="section-header">
+                  <h2 className="section-title">Explore University Events</h2>
+                  <button 
+                    className="add-event-btn" 
+                    onClick={() => setShowAddEventForm(!showAddEventForm)}
+                  >
+                    {showAddEventForm ? 'Cancel' : '+ Add Event'}
+                  </button>
+                </div>
+
+                {showAddEventForm && (
+                  <div className="add-event-form">
+                    <form onSubmit={handleAddEvent}>
+                      <div className="form-row">
+                        <input
+                          type="text"
+                          name="title"
+                          placeholder="Event Title"
+                          value={newEvent.title}
+                          onChange={handleEventInputChange}
+                          required
+                          className="form-input"
+                        />
+                        <select
+                          name="eventType"
+                          value={newEvent.eventType}
+                          onChange={handleEventInputChange}
+                          className="form-input"
+                        >
+                          <option value="seminar">Seminar</option>
+                          <option value="workshop">Workshop</option>
+                          <option value="conference">Conference</option>
+                          <option value="meeting">Meeting</option>
+                          <option value="social">Social</option>
+                          <option value="academic">Academic</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                      <textarea
+                        name="description"
+                        placeholder="Event Description"
+                        value={newEvent.description}
+                        onChange={handleEventInputChange}
+                        required
+                        className="form-input"
+                        rows="3"
+                      />
+                      <div className="form-row">
+                        <input
+                          type="text"
+                          name="organizer"
+                          placeholder="Organizer"
+                          value={newEvent.organizer}
+                          onChange={handleEventInputChange}
+                          required
+                          className="form-input"
+                        />
+                        <input
+                          type="text"
+                          name="location"
+                          placeholder="Location"
+                          value={newEvent.location}
+                          onChange={handleEventInputChange}
+                          required
+                          className="form-input"
+                        />
+                      </div>
+                      <div className="form-row">
+                        <input
+                          type="date"
+                          name="eventDate"
+                          value={newEvent.eventDate}
+                          onChange={handleEventInputChange}
+                          required
+                          className="form-input"
+                        />
+                        <input
+                          type="time"
+                          name="startTime"
+                          value={newEvent.startTime}
+                          onChange={handleEventInputChange}
+                          required
+                          className="form-input"
+                        />
+                        <input
+                          type="time"
+                          name="endTime"
+                          value={newEvent.endTime}
+                          onChange={handleEventInputChange}
+                          required
+                          className="form-input"
+                        />
+                      </div>
+                      <div className="form-row">
+                        <input
+                          type="number"
+                          name="maxAttendees"
+                          placeholder="Max Attendees (optional)"
+                          value={newEvent.maxAttendees}
+                          onChange={handleEventInputChange}
+                          className="form-input"
+                          min="1"
+                        />
+                        <input
+                          type="text"
+                          name="tags"
+                          placeholder="Tags (comma-separated)"
+                          value={newEvent.tags}
+                          onChange={handleEventInputChange}
+                          className="form-input"
+                        />
+                      </div>
+                      <div className="form-row">
+                        <input
+                          type="email"
+                          name="contactEmail"
+                          placeholder="Contact Email (optional)"
+                          value={newEvent.contactEmail}
+                          onChange={handleEventInputChange}
+                          className="form-input"
+                        />
+                        <input
+                          type="tel"
+                          name="contactPhone"
+                          placeholder="Contact Phone (optional)"
+                          value={newEvent.contactPhone}
+                          onChange={handleEventInputChange}
+                          className="form-input"
+                        />
+                      </div>
+                      <div className="form-row">
+                        <label className="checkbox-label">
+                          <input
+                            type="checkbox"
+                            name="registrationRequired"
+                            checked={newEvent.registrationRequired}
+                            onChange={handleEventInputChange}
+                          />
+                          Registration Required
+                        </label>
+                        <label className="checkbox-label">
+                          <input
+                            type="checkbox"
+                            name="isFeatured"
+                            checked={newEvent.isFeatured}
+                            onChange={handleEventInputChange}
+                          />
+                          Featured Event
+                        </label>
+                      </div>
+                      {newEvent.registrationRequired && (
+                        <input
+                          type="datetime-local"
+                          name="registrationDeadline"
+                          value={newEvent.registrationDeadline}
+                          onChange={handleEventInputChange}
+                          className="form-input"
+                        />
+                      )}
+                      <button type="submit" className="submit-btn">Create Event</button>
+                    </form>
+                  </div>
+                )}
+
+                {eventError && (
+                  <div className="error-message">{eventError}</div>
+                )}
+
+                {eventLoading ? (
+                  <div className="loading-state">Loading events...</div>
+                ) : (
+                  <div className="events-grid">
+                    {events.length === 0 ? (
+                      <div className="empty-state">
+                        <p>No upcoming events found. Be the first to add an event!</p>
+                      </div>
+                    ) : (
+                      events.map(event => (
+                        <div key={event._id} className={`event-card ${event.isFeatured ? 'featured' : ''}`}>
+                          <div className="event-header">
+                            <div className="event-type-badge">{event.eventType}</div>
+                            {event.isFeatured && <div className="featured-badge">⭐ Featured</div>}
+                          </div>
+                          <h3 className="event-title">{event.title}</h3>
+                          <p className="event-description">{event.description}</p>
+                          <div className="event-details">
+                            <div className="event-detail">
+                              <span className="detail-icon">👤</span>
+                              <span>{event.organizer}</span>
+                            </div>
+                            <div className="event-detail">
+                              <span className="detail-icon">📍</span>
+                              <span>{event.location}</span>
+                            </div>
+                            <div className="event-detail">
+                              <span className="detail-icon">📅</span>
+                              <span>{formatEventDate(event.eventDate)}</span>
+                            </div>
+                            <div className="event-detail">
+                              <span className="detail-icon">🕐</span>
+                              <span>{formatEventTime(event.startTime)} - {formatEventTime(event.endTime)}</span>
+                            </div>
+                            {event.maxAttendees && (
+                              <div className="event-detail">
+                                <span className="detail-icon">👥</span>
+                                <span>{event.currentAttendees}/{event.maxAttendees} attendees</span>
+                              </div>
+                            )}
+                          </div>
+                          {event.tags && event.tags.length > 0 && (
+                            <div className="event-tags">
+                              {event.tags.map((tag, index) => (
+                                <span key={index} className="event-tag">#{tag}</span>
+                              ))}
+                            </div>
+                          )}
+                          <div className="event-actions">
+                            {isUserRegistered(event) ? (
+                              <button 
+                                className="unregister-btn"
+                                onClick={() => handleUnregisterFromEvent(event._id)}
+                              >
+                                Unregister
+                              </button>
+                            ) : (
+                              <button 
+                                className="register-btn"
+                                onClick={() => handleRegisterForEvent(event._id)}
+                                disabled={event.isFull || !event.isRegistrationOpen}
+                              >
+                                {event.isFull ? 'Full' : 'Register'}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -9,7 +9,9 @@ import {
   deleteCode,
   addComment,
   toggleLike,
-  getCodeStats
+  getCodeStats,
+  approveComment,
+  getLeaderboard
 } from "../controller/codeController.js";
 
 const router = express.Router();
@@ -17,6 +19,7 @@ const router = express.Router();
 // Public routes (no authentication required)
 router.get("/", getAllCodes); // Get all public codes
 router.get("/stats", getCodeStats); // Get code statistics
+router.get("/leaderboard", getLeaderboard); // Get user leaderboard
 router.get("/:id", getCode); // Get single code with details
 
 // Protected routes (authentication required)
@@ -26,5 +29,6 @@ router.put("/:id", verifyToken, updateCode); // Update code
 router.delete("/:id", verifyToken, deleteCode); // Delete code
 router.post("/:id/comments", verifyToken, addComment); // Add comment
 router.post("/:id/like", verifyToken, toggleLike); // Like/Unlike code
+router.post("/:codeId/comments/:commentId/approve", verifyToken, approveComment); // Approve comment
 
 export default router;

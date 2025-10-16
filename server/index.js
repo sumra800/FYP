@@ -12,6 +12,7 @@ import userRoutes from "./routes/userRoute.js";
 import assignmentRoutes from "./routes/assignmentRoute.js";
 import reminderRoutes from "./routes/reminderRoute.js";
 import codeRoutes from "./routes/codeRoute.js";
+import eventRoutes from "./routes/eventRoute.js";
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/reminders", reminderRoutes);
 app.use("/api/codes", codeRoutes);
+app.use("/api/events", eventRoutes);
 
 // Basic route
 app.get("/", (req, res) => {

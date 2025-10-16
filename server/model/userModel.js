@@ -61,6 +61,12 @@ const userSchema = new mongoose.Schema({
     type: String, // Store the file path or URL
     default: null
   },
+  // Scoring system
+  score: {
+    type: Number,
+    default: 0,
+    min: [0, "Score cannot be negative"]
+  },
   // Timestamps
   createdAt: {
     type: Date,

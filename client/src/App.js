@@ -87,10 +87,10 @@ const AppContent = () => {
         <DashboardPage onNavigateToProfile={navigateToProfile} onNavigateToProductivity={navigateToProductivity} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToLanding={navigateToLanding} />
       )}
       {currentPage === "productivity" && (
-        <ProductivityPage onNavigateToDashboard={navigateToDashboard} onNavigateToLanding={navigateToLanding} />
+        <ProductivityPage onNavigateToDashboard={navigateToDashboard} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToLanding={navigateToLanding} />
       )}
       {currentPage === "coding-space" && (
-        <CodingSpacePage onNavigateToDashboard={navigateToDashboard} onNavigateToLanding={navigateToLanding} />
+        <CodingSpacePage onNavigateToDashboard={navigateToDashboard} onNavigateToProductivity={navigateToProductivity} onNavigateToLanding={navigateToLanding} />
       )}
     </div>
   );
