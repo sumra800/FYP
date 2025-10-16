@@ -315,20 +315,6 @@ export const codeAPI = {
     return await apiRequest('/codes/stats', {
       method: 'GET',
     });
-  },
-
-  // Approve a comment
-  approveComment: async (codeId, commentId) => {
-    return await apiRequest(`/codes/${codeId}/comments/${commentId}/approve`, {
-      method: 'POST',
-    });
-  },
-
-  // Get user leaderboard
-  getLeaderboard: async (limit = 10) => {
-    return await apiRequest(`/codes/leaderboard?limit=${limit}`, {
-      method: 'GET',
-    });
   }
 };
 

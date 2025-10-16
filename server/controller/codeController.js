@@ -300,7 +300,6 @@ export const addComment = async (req, res) => {
 
     const newComment = {
       userId: req.userId,
-      username: req.username || req.user?.nickname || req.user?.fullName || 'Anonymous',
       comment: comment.trim()
     };
 
@@ -407,106 +406,6 @@ export const getCodeStats = async (req, res) => {
 
   } catch (error) {
     console.error("Get code stats error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error"
-    });
-  }
-};
-
-// Approve a comment and award points to the commenter
-export const approveComment = async (req, res) => {
-  try {
-    const { codeId, commentId } = req.params;
-    const userId = req.userId;
-
-    if (!mongoose.Types.ObjectId.isValid(codeId) || !mongoose.Types.ObjectId.isValid(commentId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid code ID or comment ID"
-      });
-    }
-
-    const code = await Code.findById(codeId);
-    if (!code) {
-      return res.status(404).json({
-        success: false,
-        message: "Code not found"
-      });
-    }
-
-    // Check if the user is the author of the code
-    if (code.userId.toString() !== userId) {
-      return res.status(403).json({
-        success: false,
-        message: "Only the code author can approve comments"
-      });
-    }
-
-    // Find the comment
-    const comment = code.comments.id(commentId);
-    if (!comment) {
-      return res.status(404).json({
-        success: false,
-        message: "Comment not found"
-      });
-    }
-
-    // Check if comment is already approved
-    if (comment.isApproved) {
-      return res.status(400).json({
-        success: false,
-        message: "Comment is already approved"
-      });
-    }
-
-    // Approve the comment
-    comment.isApproved = true;
-    comment.approvedAt = new Date();
-
-    await code.save();
-
-    // Award points to the commenter
-    const User = (await import('../model/userModel.js')).default;
-    await User.findByIdAndUpdate(
-      comment.userId,
-      { $inc: { score: 10 } }, // Award 10 points for approved comment
-      { new: true }
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "Comment approved and points awarded",
-      comment: comment
-    });
-
-  } catch (error) {
-    console.error("Approve comment error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error"
-    });
-  }
-};
-
-// Get user leaderboard by score
-export const getLeaderboard = async (req, res) => {
-  try {
-    const { limit = 10 } = req.query;
-    
-    const User = (await import('../model/userModel.js')).default;
-    
-    const leaderboard = await User.find({}, 'nickname fullName score profilePicture')
-      .sort({ score: -1 })
-      .limit(parseInt(limit));
-
-    res.status(200).json({
-      success: true,
-      leaderboard
-    });
-
-  } catch (error) {
-    console.error("Get leaderboard error:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error"

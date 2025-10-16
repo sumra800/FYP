@@ -47,23 +47,11 @@ const codeSchema = new mongoose.Schema({
       ref: 'User',
       required: true
     },
-    username: {
-      type: String,
-      required: true
-    },
     comment: {
       type: String,
       required: true,
       trim: true,
       maxLength: [500, "Comment cannot exceed 500 characters"]
-    },
-    isApproved: {
-      type: Boolean,
-      default: false
-    },
-    approvedAt: {
-      type: Date,
-      default: null
     },
     createdAt: {
       type: Date,
