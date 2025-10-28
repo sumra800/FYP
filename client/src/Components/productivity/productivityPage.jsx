@@ -1,9 +1,10 @@
 ﻿
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { studySessionAPI } from "../../services/api";
 import "./productivityPage.css";
 
-const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigateToLanding }) => {
+const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigateToResources, onNavigateToLanding }) => {
   const { logout } = useAuth();
   const [timer, setTimer] = useState({ hours: 0, minutes: 25, seconds: 0 });
   const [isRunning, setIsRunning] = useState(false);
@@ -18,6 +19,15 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
   ]);
   const [newTask, setNewTask] = useState("");
   const [newDueDate, setNewDueDate] = useState("");
+  
+  // Study session tracking
+  const [sessionStartTime, setSessionStartTime] = useState(null);
+  const [initialTimerValue, setInitialTimerValue] = useState({ hours: 0, minutes: 25, seconds: 0 });
+  const [progressData, setProgressData] = useState([]);
+  const [loadingProgress, setLoadingProgress] = useState(false);
+  const [studyHistory, setStudyHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Timer functionality
   useEffect(() => {
@@ -53,6 +63,8 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
     if (!isRunning) {
       setIsRunning(true);
       setIsPaused(false);
+      setSessionStartTime(new Date());
+      setInitialTimerValue({ ...timer });
     }
   };
 
@@ -62,10 +74,47 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
     }
   };
 
-  const endTimer = () => {
+  const endTimer = async () => {
+    if (isRunning && sessionStartTime) {
+      const endTime = new Date();
+      
+      // Calculate time studied (initial time - remaining time)
+      const initialSeconds = (initialTimerValue.hours * 3600) + (initialTimerValue.minutes * 60) + initialTimerValue.seconds;
+      const remainingSeconds = (timer.hours * 3600) + (timer.minutes * 60) + timer.seconds;
+      const studiedSeconds = initialSeconds - remainingSeconds;
+      
+      if (studiedSeconds > 0 && subjectName.trim()) {
+        const duration = {
+          hours: Math.floor(studiedSeconds / 3600),
+          minutes: Math.floor((studiedSeconds % 3600) / 60),
+          seconds: studiedSeconds % 60
+        };
+        
+        try {
+          await studySessionAPI.createSession({
+            courseName: subjectName.trim(),
+            duration,
+            startTime: sessionStartTime,
+            endTime,
+            totalSeconds: studiedSeconds
+          });
+          
+          console.log("Study session saved successfully!");
+          
+          // Refresh progress data and history
+          fetchProgressData();
+          fetchStudyHistory();
+        } catch (error) {
+          console.error("Failed to save study session:", error);
+          alert("Failed to save study session. Please try again.");
+        }
+      }
+    }
+    
     setIsRunning(false);
     setIsPaused(false);
     setTimer({ hours: 0, minutes: 0, seconds: 0 });
+    setSessionStartTime(null);
   };
 
   const resetTimer = () => {
@@ -130,6 +179,63 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
     return value.toString().padStart(2, "0");
   };
 
+  // Fetch progress data
+  const fetchProgressData = async () => {
+    try {
+      setLoadingProgress(true);
+      const response = await studySessionAPI.getProgress(30);
+      setProgressData(response.courses || []);
+    } catch (error) {
+      console.error("Failed to fetch progress data:", error);
+    } finally {
+      setLoadingProgress(false);
+    }
+  };
+
+  // Fetch study history (all sessions)
+  const fetchStudyHistory = async () => {
+    try {
+      setLoadingHistory(true);
+      const response = await studySessionAPI.getAllSessions({ limit: 50 });
+      setStudyHistory(response.sessions || []);
+    } catch (error) {
+      console.error("Failed to fetch study history:", error);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  // Load progress data on component mount
+  useEffect(() => {
+    fetchProgressData();
+    fetchStudyHistory();
+  }, []);
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return `Yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    } else {
+      return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+  };
+
+  // Format duration for display
+  const formatDuration = (duration) => {
+    const parts = [];
+    if (duration.hours > 0) parts.push(`${duration.hours}h`);
+    if (duration.minutes > 0) parts.push(`${duration.minutes}m`);
+    if (duration.seconds > 0) parts.push(`${duration.seconds}s`);
+    return parts.join(' ') || '0s';
+  };
+
   const handleLogout = () => {
     logout();
     onNavigateToLanding();
@@ -162,6 +268,10 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
               <span className="nav-icon">📋</span>
               Productivity Tools
             </button>
+            <button className="nav-link" onClick={onNavigateToResources}>
+              <span className="nav-icon">📑</span>
+              Resources
+            </button>
             <button className="nav-link">
               <span className="nav-icon">❓</span>
               Ask-A-Senior Assistant  
@@ -180,51 +290,40 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
 
         {/* Progress Tracker Section */}
         <section className="progress-section">
-          <h2 className="section-title">Progress Tracker</h2>
+          <h2 className="section-title">Progress Tracker (Last 30 Days)</h2>
           <div className="progress-cards">
-            <div className="progress-card">
-              <div className="card-header">
-                <h3 className="subject-title">Math</h3>
-                <span className="progress-change positive">Last 30 Days +10%</span>
+            {loadingProgress ? (
+              <div className="loading-state">Loading progress...</div>
+            ) : progressData.length === 0 ? (
+              <div className="empty-progress-state">
+                <p>📊 No study sessions recorded yet</p>
+                <p className="empty-hint">Start a timer to track your study progress!</p>
               </div>
-              <div className="progress-value">80%</div>
-              <div className="progress-chart">
-                <div className="chart-line">
-                  <div className="chart-point" style={{height: "60%"}}></div>
-                  <div className="chart-point" style={{height: "80%"}}></div>
-                  <div className="chart-point" style={{height: "90%"}}></div>
-                  <div className="chart-point" style={{height: "100%"}}></div>
+            ) : (
+              progressData.map((course, index) => (
+                <div className="progress-card" key={index}>
+                  <div className="card-header">
+                    <h3 className="subject-title">{course.courseName}</h3>
+                    <span className="progress-change positive">
+                      {course.sessionCount} session{course.sessionCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className="progress-stats">
+                    <div className="stat-item">
+                      <div className="stat-value">{course.totalHours}h</div>
+                      <div className="stat-label">Total Time</div>
+                    </div>
+                    <div className="stat-item">
+                      <div className="stat-value">{Math.round(course.totalHours / course.sessionCount * 10) / 10}h</div>
+                      <div className="stat-label">Avg/Session</div>
+                    </div>
+                  </div>
+                  <div className="course-time-detail">
+                    {course.totalMinutes} minutes total
+                  </div>
                 </div>
-                <div className="chart-labels">
-                  <span>W1</span>
-                  <span>W2</span>
-                  <span>W3</span>
-                  <span>W4</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="progress-card">
-              <div className="card-header">
-                <h3 className="subject-title">Science</h3>
-                <span className="progress-change positive">Last 30 Days +5%</span>
-              </div>
-              <div className="progress-value">70%</div>
-              <div className="progress-chart">
-                <div className="chart-line">
-                  <div className="chart-point" style={{height: "50%"}}></div>
-                  <div className="chart-point" style={{height: "65%"}}></div>
-                  <div className="chart-point" style={{height: "75%"}}></div>
-                  <div className="chart-point" style={{height: "100%"}}></div>
-                </div>
-                <div className="chart-labels">
-                  <span>W1</span>
-                  <span>W2</span>
-                  <span>W3</span>
-                  <span>W4</span>
-                </div>
-              </div>
-            </div>
+              ))
+            )}
           </div>
         </section>
 
@@ -353,6 +452,65 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
               </button>
             </div>
           </div>
+        </section>
+
+        {/* Study History Section */}
+        <section className="history-section">
+          <div className="history-header">
+            <h2 className="section-title">Study History</h2>
+            <button 
+              className="toggle-history-btn"
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              {showHistory ? '▼ Hide History' : '▶ Show History'}
+            </button>
+          </div>
+
+          {showHistory && (
+            <div className="history-content">
+              {loadingHistory ? (
+                <div className="loading-state">Loading study history...</div>
+              ) : studyHistory.length === 0 ? (
+                <div className="empty-history-state">
+                  <p>📚 No study sessions yet</p>
+                  <p className="empty-hint">Complete a study session to see it here!</p>
+                </div>
+              ) : (
+                <div className="history-table-container">
+                  <table className="history-table">
+                    <thead>
+                      <tr>
+                        <th>Course</th>
+                        <th>Duration</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {studyHistory.map((session) => (
+                        <tr key={session._id}>
+                          <td className="course-cell">
+                            <span className="course-badge">{session.courseName}</span>
+                          </td>
+                          <td className="duration-cell">
+                            {formatDuration(session.duration)}
+                          </td>
+                          <td className="date-cell">
+                            {formatDate(session.date)}
+                          </td>
+                          <td className="time-cell">
+                            {new Date(session.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {' - '}
+                            {new Date(session.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
         </section>
 
         {/* To-Do List Section */}

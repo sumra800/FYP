@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import AvatarBuilder from "./AvatarBuilder";
 import "./profilePage.css";
 
 const ProfilePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
@@ -10,11 +11,14 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
     codingSkills: "",
     studyPersona: "",
     personalDescription: "",
+    societyPosition: "",
     profilePicture: null
   });
   const [validationErrors, setValidationErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
+  const [showAvatarBuilder, setShowAvatarBuilder] = useState(false);
+  const [avatarConfig, setAvatarConfig] = useState(null);
 
   // Load user data when component mounts
   useEffect(() => {
@@ -25,6 +29,7 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
         codingSkills: user.codingSkills || "",
         studyPersona: user.studyPersona || "",
         personalDescription: user.personalDescription || "",
+        societyPosition: user.societyPosition || "",
         profilePicture: user.profilePicture || null
       });
       
@@ -140,6 +145,7 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
         codingSkills: user.codingSkills || "",
         studyPersona: user.studyPersona || "",
         personalDescription: user.personalDescription || "",
+        societyPosition: user.societyPosition || "",
         profilePicture: user.profilePicture || null
       });
       
@@ -160,6 +166,23 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
   const handleLogout = () => {
     logout();
     onNavigateToLanding();
+  };
+
+  const handleAvatarSave = (file, config) => {
+    setFormData({
+      ...formData,
+      profilePicture: file
+    });
+    setAvatarConfig(config);
+    
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreviewImage(e.target.result);
+    };
+    reader.readAsDataURL(file);
+    
+    setShowAvatarBuilder(false);
   };
 
   // Helper function to construct proper image URL
@@ -313,36 +336,56 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
             {/* Profile Picture */}
             <div className="form-group">
               <label className="form-label">Profile Picture</label>
-              <div className="file-upload-area">
-                <input 
-                  type="file" 
-                  id="profile-picture"
-                  accept="image/png,image/jpg,image/jpeg,image/gif"
-                  onChange={handleFileChange}
-                  className="file-input"
-                  disabled={isLoading}
-                />
-                <label htmlFor="profile-picture" className="file-upload-label">
-                  {previewImage ? (
-                    <div className="image-preview">
-                      <img 
-                        src={getImageUrl(previewImage)} 
-                        alt="Profile preview" 
-                        className="preview-img" 
-                      />
-                      <div className="preview-overlay">
-                        <div className="upload-icon">📷</div>
-                        <div className="upload-text">Click to change image</div>
+              
+              <div className="profile-picture-options">
+                <div className="file-upload-area">
+                  <input 
+                    type="file" 
+                    id="profile-picture"
+                    accept="image/png,image/jpg,image/jpeg,image/gif"
+                    onChange={handleFileChange}
+                    className="file-input"
+                    disabled={isLoading}
+                  />
+                  <label htmlFor="profile-picture" className="file-upload-label">
+                    {previewImage ? (
+                      <div className="image-preview">
+                        <img 
+                          src={getImageUrl(previewImage)} 
+                          alt="Profile preview" 
+                          className="preview-img" 
+                        />
+                        <div className="preview-overlay">
+                          <div className="upload-icon">📷</div>
+                          <div className="upload-text">Click to change image</div>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="upload-placeholder">
-                      <div className="upload-icon">☁️</div>
-                      <div className="upload-text">Upload a file or drag and drop</div>
-                      <div className="upload-info">PNG, JPG, GIF up to 10MB</div>
-                    </div>
-                  )}
-                </label>
+                    ) : (
+                      <div className="upload-placeholder">
+                        <div className="upload-icon">☁️</div>
+                        <div className="upload-text">Upload a file or drag and drop</div>
+                        <div className="upload-info">PNG, JPG, GIF up to 10MB</div>
+                      </div>
+                    )}
+                  </label>
+                </div>
+
+                <div className="divider-section">
+                  <div className="divider-line"></div>
+                  <span className="divider-text">OR</span>
+                  <div className="divider-line"></div>
+                </div>
+
+                <button 
+                  type="button"
+                  className="create-avatar-btn"
+                  onClick={() => setShowAvatarBuilder(true)}
+                  disabled={isLoading}
+                >
+                  <span className="avatar-icon">🎨</span>
+                  <span className="avatar-text">Create Custom Avatar</span>
+                  <span className="avatar-subtext">Bitmoji-style avatar builder</span>
+                </button>
               </div>
             </div>
 
@@ -358,6 +401,23 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
                 disabled={isLoading}
                 rows="4"
               />
+            </div>
+
+            {/* University Society Position */}
+            <div className="form-group">
+              <label className="form-label">University Society Position</label>
+              <textarea 
+                name="societyPosition"
+                placeholder="e.g., President of Computer Science Society, Member of Robotics Club, Vice President of Debate Society..."
+                className="form-textarea society-position"
+                value={formData.societyPosition}
+                onChange={handleChange}
+                disabled={isLoading}
+                rows="3"
+              />
+              <small className="form-hint">
+                Mention your roles, positions, or memberships in university clubs, societies, or organizations.
+              </small>
             </div>
 
             {/* Action Buttons */}
@@ -381,6 +441,15 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToLanding }) => {
           </form>
         </div>
       </main>
+
+      {/* Avatar Builder Modal */}
+      {showAvatarBuilder && (
+        <AvatarBuilder
+          onSave={handleAvatarSave}
+          onClose={() => setShowAvatarBuilder(false)}
+          initialAvatar={avatarConfig}
+        />
+      )}
     </div>
   );
 };

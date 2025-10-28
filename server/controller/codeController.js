@@ -1,4 +1,5 @@
 import Code from "../model/codeModel.js";
+import User from "../model/userModel.js";
 import mongoose from "mongoose";
 
 // Create a new code snippet
@@ -32,7 +33,7 @@ export const createCode = async (req, res) => {
     await newCode.save();
 
     // Populate user information for response
-    await newCode.populate('userId', 'nickname fullName profilePicture');
+    await newCode.populate('userId', 'nickname fullName profilePicture score');
 
     res.status(201).json({
       success: true,
@@ -76,7 +77,7 @@ export const getAllCodes = async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const codes = await Code.find(query)
-      .populate('userId', 'nickname fullName profilePicture')
+      .populate('userId', 'nickname fullName profilePicture score')
       .sort(sort)
       .skip(skip)
       .limit(parseInt(limit))
@@ -118,9 +119,9 @@ export const getCode = async (req, res) => {
     }
 
     const code = await Code.findById(id)
-      .populate('userId', 'nickname fullName profilePicture')
-      .populate('comments.userId', 'nickname fullName profilePicture')
-      .populate('likes', 'nickname fullName');
+      .populate('userId', 'nickname fullName profilePicture score')
+      .populate('comments.userId', 'nickname fullName profilePicture score')
+      .populate('likes', 'nickname fullName score');
 
     if (!code) {
       return res.status(404).json({
@@ -157,7 +158,7 @@ export const getUserCodes = async (req, res) => {
     sort[sortBy] = sortOrder === "desc" ? -1 : 1;
 
     const codes = await Code.find({ userId: req.userId })
-      .populate('userId', 'nickname fullName profilePicture')
+      .populate('userId', 'nickname fullName profilePicture score')
       .sort(sort);
 
     res.status(200).json({
@@ -198,7 +199,7 @@ export const updateCode = async (req, res) => {
       { _id: id, userId: req.userId },
       updateData,
       { new: true, runValidators: true }
-    ).populate('userId', 'nickname fullName profilePicture');
+    ).populate('userId', 'nickname fullName profilePicture score');
 
     if (!code) {
       return res.status(404).json({
@@ -307,7 +308,7 @@ export const addComment = async (req, res) => {
     await code.save();
 
     // Populate the new comment with user info
-    await code.populate('comments.userId', 'nickname fullName profilePicture');
+    await code.populate('comments.userId', 'nickname fullName profilePicture score');
 
     const addedComment = code.comments[code.comments.length - 1];
 
@@ -406,6 +407,105 @@ export const getCodeStats = async (req, res) => {
 
   } catch (error) {
     console.error("Get code stats error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+
+// Approve a comment and award points
+export const approveComment = async (req, res) => {
+  try {
+    const { id, commentId } = req.params;
+    const { points = 10 } = req.body; // Default 10 points per approved comment
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid code ID"
+      });
+    }
+
+    const code = await Code.findById(id);
+    if (!code) {
+      return res.status(404).json({
+        success: false,
+        message: "Code not found"
+      });
+    }
+
+    // Check if the user is the author of the code
+    if (code.userId.toString() !== req.userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Only the code author can approve comments"
+      });
+    }
+
+    // Find the comment
+    const comment = code.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found"
+      });
+    }
+
+    // Check if already approved
+    if (comment.isApproved) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment is already approved"
+      });
+    }
+
+    // Update comment status
+    comment.isApproved = true;
+    comment.pointsAwarded = points;
+
+    // Award points to the commenter
+    const commenter = await User.findById(comment.userId);
+    if (commenter) {
+      commenter.score += points;
+      await commenter.save();
+    }
+
+    await code.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Comment approved! ${points} points awarded to ${commenter?.nickname || commenter?.fullName || 'user'}`,
+      comment,
+      newScore: commenter?.score
+    });
+
+  } catch (error) {
+    console.error("Approve comment error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during comment approval"
+    });
+  }
+};
+
+// Get leaderboard (top scorers)
+export const getLeaderboard = async (req, res) => {
+  try {
+    const { limit = 10 } = req.query;
+
+    const topUsers = await User.find({})
+      .select('fullName nickname profilePicture score universityName')
+      .sort({ score: -1 })
+      .limit(parseInt(limit));
+
+    res.status(200).json({
+      success: true,
+      leaderboard: topUsers
+    });
+
+  } catch (error) {
+    console.error("Get leaderboard error:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error"

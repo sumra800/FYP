@@ -53,6 +53,14 @@ const codeSchema = new mongoose.Schema({
       trim: true,
       maxLength: [500, "Comment cannot exceed 500 characters"]
     },
+    isApproved: {
+      type: Boolean,
+      default: false
+    },
+    pointsAwarded: {
+      type: Number,
+      default: 0
+    },
     createdAt: {
       type: Date,
       default: Date.now

@@ -13,6 +13,10 @@ import assignmentRoutes from "./routes/assignmentRoute.js";
 import reminderRoutes from "./routes/reminderRoute.js";
 import codeRoutes from "./routes/codeRoute.js";
 import eventRoutes from "./routes/eventRoute.js";
+import googleClassroomRoutes from "./routes/googleClassroomRoute.js";
+import resourceRoutes from "./routes/resourceRoute.js";
+import studySessionRoutes from "./routes/studySessionRoute.js";
+import { startAutoSync } from "./services/classroomSyncService.js";
 
 const app = express();
 
@@ -51,6 +55,9 @@ app.use("/api/assignments", assignmentRoutes);
 app.use("/api/reminders", reminderRoutes);
 app.use("/api/codes", codeRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/google-classroom", googleClassroomRoutes);
+app.use("/api/resources", resourceRoutes);
+app.use("/api/study-sessions", studySessionRoutes);
 
 // Basic route
 app.get("/", (req, res) => {
@@ -90,9 +97,14 @@ mongoose
   .connect(MONGOURL)
   .then(() => {
     console.log("Connected to MongoDB successfully");
+    
+    // Start Google Classroom auto-sync service
+    startAutoSync();
+    
     app.listen(PORT, () => {
       console.log(`Server is running on port: ${PORT}`);
       console.log(`API endpoints available at: http://localhost:${PORT}/api/users`);
+      console.log(`Google Classroom integration enabled`);
     });
   })
   .catch((error) => {

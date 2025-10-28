@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { codeAPI } from "../../services/api";
 import "./codingSpacePage.css";
 
-const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNavigateToLanding }) => {
+const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNavigateToResources, onNavigateToLanding }) => {
   const { logout, user } = useAuth();
   const [activeTab, setActiveTab] = useState("browse");
   const [codes, setCodes] = useState([]);
@@ -25,6 +25,8 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
     sortBy: "createdAt",
     sortOrder: "desc"
   });
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Fetch codes on component mount
   useEffect(() => {
@@ -144,6 +146,30 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
     }
   };
 
+  const handleApproveComment = async (commentId) => {
+    if (!selectedCode) return;
+
+    try {
+      const response = await codeAPI.approveComment(selectedCode._id, commentId, 10);
+      // Refresh the selected code to show updated comment status
+      handleViewCode(selectedCode._id);
+      // Show success message
+      alert(response.message);
+    } catch (err) {
+      console.error("Error approving comment:", err);
+      setError("Failed to approve comment");
+    }
+  };
+
+  const fetchLeaderboard = async () => {
+    try {
+      const response = await codeAPI.getLeaderboard(10);
+      setLeaderboard(response.leaderboard || []);
+    } catch (err) {
+      console.error("Error fetching leaderboard:", err);
+    }
+  };
+
   const handleLogout = () => {
     logout();
     onNavigateToLanding();
@@ -226,6 +252,10 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
               <span className="nav-icon">📋</span>
               Productivity Tools
             </button>
+            <button className="nav-link" onClick={onNavigateToResources}>
+              <span className="nav-icon">📑</span>
+              Resources
+            </button>
             <button className="nav-link">
               <span className="nav-icon">❓</span>
               Ask-A-Senior Assistant  
@@ -281,6 +311,16 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
             >
               <span className="nav-icon">📊</span>
               <span className="nav-text">Statistics</span>
+            </button>
+            <button 
+              className={`nav-item ${activeTab === "leaderboard" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("leaderboard");
+                fetchLeaderboard();
+              }}
+            >
+              <span className="nav-icon">🏆</span>
+              <span className="nav-text">Leaderboard</span>
             </button>
           </nav>
         </aside>
@@ -463,7 +503,12 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                       
                       <div className="code-meta">
                         <div className="code-author">
-                          <span className="author-name">{code.userId?.nickname || code.userId?.fullName || 'Anonymous'}</span>
+                          <span className="author-name">
+                            {code.userId?.nickname || code.userId?.fullName || 'Anonymous'}
+                            {code.userId?.score !== undefined && (
+                              <span className="user-score"> ⭐ {code.userId.score}</span>
+                            )}
+                          </span>
                           <span className="code-date">{formatDate(code.createdAt)}</span>
                         </div>
                       </div>
@@ -573,6 +618,56 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
               </div>
             </div>
           )}
+
+          {/* Leaderboard Tab */}
+          {activeTab === "leaderboard" && (
+            <div className="leaderboard-tab">
+              <div className="tab-header">
+                <h1>🏆 Top Contributors</h1>
+                <p className="tab-subtitle">Users ranked by their contribution scores</p>
+              </div>
+
+              {leaderboard.length === 0 ? (
+                <div className="empty-state">
+                  <p>No scores yet. Start commenting on code to earn points!</p>
+                </div>
+              ) : (
+                <div className="leaderboard-list">
+                  {leaderboard.map((user, index) => (
+                    <div key={user._id} className={`leaderboard-item rank-${index + 1}`}>
+                      <div className="rank-badge">
+                        {index === 0 && "🥇"}
+                        {index === 1 && "🥈"}
+                        {index === 2 && "🥉"}
+                        {index > 2 && `#${index + 1}`}
+                      </div>
+                      <div className="user-info">
+                        {user.profilePicture ? (
+                          <img 
+                            src={`http://localhost:7000${user.profilePicture}`} 
+                            alt={user.fullName}
+                            className="user-avatar"
+                          />
+                        ) : (
+                          <div className="user-avatar-placeholder">
+                            {(user.nickname || user.fullName || 'U').charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="user-details">
+                          <span className="user-name">{user.nickname || user.fullName}</span>
+                          <span className="user-university">{user.universityName}</span>
+                        </div>
+                      </div>
+                      <div className="user-score-display">
+                        <span className="score-value">⭐ {user.score}</span>
+                        <span className="score-label">points</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </main>
       </div>
 
@@ -656,16 +751,35 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                 <div className="comments-list">
                   {selectedCode.comments && selectedCode.comments.length > 0 ? (
                     selectedCode.comments.map((comment, index) => (
-                      <div key={index} className="comment">
-                        <div className="comment-author">
-                          <span className="author-name">
-                            {comment.userId?.nickname || comment.userId?.fullName || 'Anonymous'}
-                          </span>
-                          <span className="comment-date">
-                            {formatDate(comment.createdAt)}
-                          </span>
+                      <div key={index} className={`comment ${comment.isApproved ? 'approved' : ''}`}>
+                        <div className="comment-header">
+                          <div className="comment-author">
+                            <span className="author-name">
+                              {comment.userId?.nickname || comment.userId?.fullName || 'Anonymous'}
+                              {comment.userId?.score !== undefined && (
+                                <span className="user-score-badge"> ⭐ {comment.userId.score}</span>
+                              )}
+                            </span>
+                            <span className="comment-date">
+                              {formatDate(comment.createdAt)}
+                            </span>
+                          </div>
+                          {comment.isApproved && (
+                            <span className="approved-badge">✓ Approved (+{comment.pointsAwarded} pts)</span>
+                          )}
                         </div>
                         <p className="comment-text">{comment.comment}</p>
+                        {/* Show approve button only if user is the code author and comment is not yet approved */}
+                        {user && selectedCode.userId?._id === user._id && 
+                         !comment.isApproved && 
+                         comment.userId?._id !== user._id && (
+                          <button 
+                            className="approve-btn"
+                            onClick={() => handleApproveComment(comment._id)}
+                          >
+                            ✓ Approve Comment (Award 10 points)
+                          </button>
+                        )}
                       </div>
                     ))
                   ) : (

@@ -1,10 +1,11 @@
 ﻿
 import React, { useState, useEffect } from "react"
 import { useAuth } from "../../context/AuthContext";
-import { assignmentAPI, reminderAPI, eventAPI } from "../../services/api";
+import { assignmentAPI, reminderAPI, eventAPI, studySessionAPI } from "../../services/api";
+import GoogleClassroomIntegration from "./GoogleClassroomIntegration";
 import "./dashboardPage.css";
 
-const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNavigateToCodingSpace, onNavigateToLanding }) => {
+const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNavigateToCodingSpace, onNavigateToSettings, onNavigateToResources, onNavigateToLanding }) => {
   const { logout, user } = useAuth();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [assignments, setAssignments] = useState([]);
@@ -60,6 +61,13 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
     isFeatured: false
   });
 
+  // Study session statistics state
+  const [studyStats, setStudyStats] = useState({
+    weekly: { hours: 0, sessionCount: 0, change: 0 },
+    monthly: { hours: 0, sessionCount: 0, change: 0 }
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+
   // Initialize alarm sound
   useEffect(() => {
     // Create a simple alarm sound using Web Audio API
@@ -92,11 +100,28 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
     setAlarmSound(audio);
   }, []);
 
+  // Fetch study statistics
+  const fetchStudyStats = async () => {
+    try {
+      setStatsLoading(true);
+      const response = await studySessionAPI.getWeeklyMonthlyStats();
+      setStudyStats({
+        weekly: response.weekly || { hours: 0, sessionCount: 0, change: 0 },
+        monthly: response.monthly || { hours: 0, sessionCount: 0, change: 0 }
+      });
+    } catch (err) {
+      console.error("Error fetching study statistics:", err);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   // Fetch assignments and reminders on component mount
   useEffect(() => {
     fetchAssignments();
     fetchReminders();
     checkUpcomingReminders();
+    fetchStudyStats();
   }, []);
 
   // Check for upcoming reminders every minute
@@ -620,6 +645,10 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                   <span className="dropdown-icon">❓</span>
                   Ask-A-Senior Assistant
                 </button>
+                <button className="dropdown-item" onClick={() => { onNavigateToResources(); setHamburgerMenuOpen(false); }}>
+                  <span className="dropdown-icon">📑</span>
+                  Resources
+                </button>
                 <div className="dropdown-divider"></div>
                 <button className="dropdown-item" onClick={toggleSidebar}>
                   <span className="dropdown-icon">{sidebarOpen ? "◀" : "▶"}</span>
@@ -628,6 +657,10 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                 <button className="dropdown-item" onClick={onNavigateToProfile}>
                   <span className="dropdown-icon">👤</span>
                   Edit Profile
+                </button>
+                <button className="dropdown-item" onClick={() => { onNavigateToSettings(); setHamburgerMenuOpen(false); }}>
+                  <span className="dropdown-icon">⚙️</span>
+                  Settings
                 </button>
                 <button className="dropdown-item" onClick={handleLogout}>
                   <span className="dropdown-icon">🚪</span>
@@ -710,6 +743,19 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
             </button>
             
             <button 
+              className={`nav-item ${activeTab === "resources" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("resources");
+                if (onNavigateToResources) {
+                  onNavigateToResources();
+                }
+              }}
+            >
+              <span className="nav-icon">📑</span>
+              <span className="nav-text">Resources</span>
+            </button>
+            
+            <button 
               className={`nav-item ${activeTab === "assistant" ? "active" : ""}`}
               onClick={() => setActiveTab("assistant")}
             >
@@ -757,6 +803,11 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                     <span className="user-name">
                       {user?.nickname || user?.fullName || 'User'}
                     </span>
+                    {user?.score !== undefined && (
+                      <span className="user-score-badge-dashboard">
+                        ⭐ {user.score} points
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -765,6 +816,12 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
 
           {/* Dashboard Content */}
           <div className="dashboard-content">
+            {/* Google Classroom Integration */}
+            <GoogleClassroomIntegration 
+              userId={user?._id} 
+              onSync={fetchAssignments}
+            />
+            
             {/* Performance Metrics */}
             <div className="metrics-section">
               <div className="weekly-performance">
@@ -772,8 +829,15 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                 <div className="metric-card">
                   <div className="metric-info">
                     <h3 className="metric-label">Weekly Study Hours</h3>
-                    <div className="metric-value">25</div>
-                    <div className="metric-change positive">+10%</div>
+                    <div className="metric-value">
+                      {statsLoading ? "..." : studyStats.weekly.hours}
+                    </div>
+                    <div className={`metric-change ${studyStats.weekly.change >= 0 ? 'positive' : 'negative'}`}>
+                      {statsLoading ? "" : `${studyStats.weekly.change >= 0 ? '+' : ''}${studyStats.weekly.change}%`}
+                    </div>
+                    {!statsLoading && studyStats.weekly.sessionCount > 0 && (
+                      <div className="session-count">{studyStats.weekly.sessionCount} sessions</div>
+                    )}
                   </div>
                   <div className="chart-container">
                     <div className="line-chart">
@@ -797,8 +861,15 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                 <div className="metric-card">
                   <div className="metric-info">
                     <h3 className="metric-label">Monthly Study Hours</h3>
-                    <div className="metric-value">100</div>
-                    <div className="metric-change positive">+5%</div>
+                    <div className="metric-value">
+                      {statsLoading ? "..." : studyStats.monthly.hours}
+                    </div>
+                    <div className={`metric-change ${studyStats.monthly.change >= 0 ? 'positive' : 'negative'}`}>
+                      {statsLoading ? "" : `${studyStats.monthly.change >= 0 ? '+' : ''}${studyStats.monthly.change}%`}
+                    </div>
+                    {!statsLoading && studyStats.monthly.sessionCount > 0 && (
+                      <div className="session-count">{studyStats.monthly.sessionCount} sessions</div>
+                    )}
                   </div>
                   <div className="chart-container">
                     <div className="bar-chart">
@@ -925,9 +996,30 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                       {assignments.map((assignment) => (
                         <tr key={assignment._id}>
                           <td className="assignment-name">
-                            <div className="assignment-title">{assignment.title}</div>
+                            <div className="assignment-title-row">
+                              <div className="assignment-title">{assignment.title}</div>
+                              {assignment.googleClassroom?.isFromClassroom && (
+                                <span className="classroom-badge" title="From Google Classroom">
+                                  <img 
+                                    src="https://ssl.gstatic.com/classroom/favicon.png" 
+                                    alt="Google Classroom" 
+                                    style={{width: '16px', height: '16px'}}
+                                  />
+                                </span>
+                              )}
+                            </div>
                             {assignment.description && (
                               <div className="assignment-description">{assignment.description}</div>
+                            )}
+                            {assignment.googleClassroom?.alternateLink && (
+                              <a 
+                                href={assignment.googleClassroom.alternateLink} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="classroom-link"
+                              >
+                                View in Google Classroom →
+                              </a>
                             )}
                           </td>
                           <td className="assignment-subject">{assignment.subject}</td>

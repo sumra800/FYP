@@ -57,9 +57,43 @@ const userSchema = new mongoose.Schema({
     trim: true,
     maxLength: [500, "Personal description cannot exceed 500 characters"]
   },
+  societyPosition: {
+    type: String,
+    trim: true,
+    maxLength: [200, "Society position cannot exceed 200 characters"]
+  },
   profilePicture: {
     type: String, // Store the file path or URL
     default: null
+  },
+  // Scoring system
+  score: {
+    type: Number,
+    default: 0,
+    min: [0, "Score cannot be negative"]
+  },
+  // Google Classroom Integration
+  googleAuth: {
+    accessToken: {
+      type: String,
+      default: null
+    },
+    refreshToken: {
+      type: String,
+      default: null
+    },
+    tokenExpiry: {
+      type: Date,
+      default: null
+    },
+    isConnected: {
+      type: Boolean,
+      default: false
+    },
+    lastSync: {
+      type: Date,
+      default: null
+    }
   },
   // Timestamps
   createdAt: {

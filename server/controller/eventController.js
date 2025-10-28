@@ -126,8 +126,8 @@ export const getAllEvents = async (req, res) => {
     };
 
     const events = await Event.find(query, null, options)
-      .populate('createdBy', 'username profilePicture')
-      .populate('attendees', 'username profilePicture');
+      .populate('createdBy', 'fullName nickname profilePicture score universityName')
+      .populate('attendees', 'fullName nickname profilePicture score');
     
     const total = await Event.countDocuments(query);
 
@@ -153,8 +153,8 @@ export const getEvent = async (req, res) => {
     }
 
     const event = await Event.findById(id)
-      .populate('createdBy', 'username profilePicture')
-      .populate('attendees', 'username profilePicture');
+      .populate('createdBy', 'fullName nickname profilePicture score universityName')
+      .populate('attendees', 'fullName nickname profilePicture score');
 
     if (!event || !event.isActive) {
       return res.status(404).json({ success: false, message: "Event not found." });
@@ -183,8 +183,8 @@ export const getUserEvents = async (req, res) => {
     };
 
     const events = await Event.find({ createdBy: userId }, null, options)
-      .populate('createdBy', 'username profilePicture')
-      .populate('attendees', 'username profilePicture');
+      .populate('createdBy', 'fullName nickname profilePicture score universityName')
+      .populate('attendees', 'fullName nickname profilePicture score');
     
     const total = await Event.countDocuments({ createdBy: userId });
 
@@ -220,8 +220,8 @@ export const getUserRegisteredEvents = async (req, res) => {
       attendees: userId, 
       isActive: true 
     }, null, options)
-      .populate('createdBy', 'username profilePicture')
-      .populate('attendees', 'username profilePicture');
+      .populate('createdBy', 'fullName nickname profilePicture score universityName')
+      .populate('attendees', 'fullName nickname profilePicture score');
     
     const total = await Event.countDocuments({ attendees: userId, isActive: true });
 
@@ -263,8 +263,8 @@ export const updateEvent = async (req, res) => {
       id,
       updateData,
       { new: true, runValidators: true }
-    ).populate('createdBy', 'username profilePicture')
-     .populate('attendees', 'username profilePicture');
+    ).populate('createdBy', 'fullName nickname profilePicture score universityName')
+     .populate('attendees', 'fullName nickname profilePicture score');
 
     res.status(200).json({ success: true, message: "Event updated successfully.", event: updatedEvent });
   } catch (error) {

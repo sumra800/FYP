@@ -1,0 +1,84 @@
+/* Theme CSS Variables */
+
+/* Light Theme */
+:root,
+.light-theme {
+  /* Background Colors */
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --card-bg: #ffffff;
+  
+  /* Text Colors */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  
+  /* Border Colors */
+  --border-color: #e9ecef;
+  
+  /* Button Colors */
+  --btn-primary: #007bff;
+  --btn-primary-hover: #0056b3;
+  --btn-text: #ffffff;
+  
+  /* Toggle Colors */
+  --toggle-bg: #e9ecef;
+  
+  /* Shadow Colors */
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  
+  /* Accent Colors */
+  --accent-blue: #007bff;
+  --accent-green: #28a745;
+  --accent-red: #dc3545;
+  --accent-yellow: #ffc107;
+}
+
+/* Dark Theme */
+.dark-theme {
+  /* Background Colors */
+  --bg-primary: #1a1d23;
+  --bg-secondary: #252a31;
+  --card-bg: #2d333b;
+  
+  /* Text Colors */
+  --text-primary: #e6e8eb;
+  --text-secondary: #adb5bd;
+  
+  /* Border Colors */
+  --border-color: #404854;
+  
+  /* Button Colors */
+  --btn-primary: #0d6efd;
+  --btn-primary-hover: #0b5ed7;
+  --btn-text: #ffffff;
+  
+  /* Toggle Colors */
+  --toggle-bg: #404854;
+  
+  /* Shadow Colors */
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  /* Accent Colors */
+  --accent-blue: #0d6efd;
+  --accent-green: #198754;
+  --accent-red: #dc3545;
+  --accent-yellow: #ffc107;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease;
+}
+
+/* Specific elements that should have transitions */
+body,
+.settings-page,
+.settings-header,
+.settings-card,
+.settings-section,
+.preview-card {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+

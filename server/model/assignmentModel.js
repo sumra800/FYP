@@ -53,6 +53,42 @@ const assignmentSchema = new mongoose.Schema({
     trim: true,
     maxLength: [50, "Tag cannot exceed 50 characters"]
   }],
+  // Google Classroom Integration
+  googleClassroom: {
+    isFromClassroom: {
+      type: Boolean,
+      default: false
+    },
+    courseId: {
+      type: String,
+      default: null
+    },
+    courseName: {
+      type: String,
+      default: null
+    },
+    courseWorkId: {
+      type: String,
+      default: null
+    },
+    alternateLink: {
+      type: String,
+      default: null
+    },
+    maxPoints: {
+      type: Number,
+      default: null
+    },
+    workType: {
+      type: String,
+      enum: ['ASSIGNMENT', 'SHORT_ANSWER_QUESTION', 'MULTIPLE_CHOICE_QUESTION', null],
+      default: null
+    },
+    lastSyncedAt: {
+      type: Date,
+      default: null
+    }
+  },
   // Timestamps
   createdAt: {
     type: Date,

@@ -315,6 +315,21 @@ export const codeAPI = {
     return await apiRequest('/codes/stats', {
       method: 'GET',
     });
+  },
+
+  // Approve a comment and award points
+  approveComment: async (codeId, commentId, points = 10) => {
+    return await apiRequest(`/codes/${codeId}/comments/${commentId}/approve`, {
+      method: 'POST',
+      body: JSON.stringify({ points }),
+    });
+  },
+
+  // Get leaderboard (top scorers)
+  getLeaderboard: async (limit = 10) => {
+    return await apiRequest(`/codes/leaderboard?limit=${limit}`, {
+      method: 'GET',
+    });
   }
 };
 
@@ -394,6 +409,190 @@ export const eventAPI = {
       method: 'GET',
     });
   }
+};
+
+// Google Classroom API functions
+export const googleClassroomAPI = {
+  // Get Google OAuth URL
+  getAuthUrl: async (userId) => {
+    return await apiRequest(`/google-classroom/auth-url?userId=${userId}`, {
+      method: 'GET',
+    });
+  },
+
+  // Get connection status
+  getConnectionStatus: async () => {
+    return await apiRequest('/google-classroom/status', {
+      method: 'GET',
+    });
+  },
+
+  // Manual sync
+  manualSync: async () => {
+    return await apiRequest('/google-classroom/sync', {
+      method: 'POST',
+    });
+  },
+
+  // Disconnect Google Classroom
+  disconnect: async () => {
+    return await apiRequest('/google-classroom/disconnect', {
+      method: 'POST',
+    });
+  },
+};
+
+// Resource API functions
+export const resourceAPI = {
+  // Upload a new resource
+  uploadResource: async (formData) => {
+    const token = getAuthToken();
+    const url = `${API_BASE_URL}/resources/upload`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+          // Don't set Content-Type - let browser set it with boundary for multipart/form-data
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to upload resource');
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
+  },
+
+  // Get all resources with optional filters
+  getAllResources: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters).toString();
+    const endpoint = queryParams ? `/resources/all?${queryParams}` : '/resources/all';
+    return await apiRequest(endpoint);
+  },
+
+  // Get resources by type (pastPaper, notes, tutorial)
+  getResourcesByType: async (type) => {
+    return await apiRequest(`/resources/type/${type}`);
+  },
+
+  // Get user's uploaded resources
+  getMyResources: async () => {
+    return await apiRequest('/resources/my-resources');
+  },
+
+  // Get single resource by ID
+  getResourceById: async (id) => {
+    return await apiRequest(`/resources/${id}`);
+  },
+
+  // Download a resource
+  downloadResource: async (id, fileName) => {
+    const token = getAuthToken();
+    const url = `${API_BASE_URL}/resources/download/${id}`;
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download resource');
+      }
+
+      // Create a blob from the response
+      const blob = await response.blob();
+      
+      // Create a temporary URL for the blob
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element and trigger download
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = fileName || 'resource';
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(blobUrl);
+      document.body.removeChild(a);
+
+      return { message: 'Download started' };
+    } catch (error) {
+      console.error('Download error:', error);
+      throw error;
+    }
+  },
+
+  // Update a resource
+  updateResource: async (id, data) => {
+    return await apiRequest(`/resources/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  // Delete a resource
+  deleteResource: async (id) => {
+    return await apiRequest(`/resources/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Get filter options
+  getFilters: async () => {
+    return await apiRequest('/resources/filters');
+  },
+};
+
+// Study Session API functions
+export const studySessionAPI = {
+  // Create a new study session
+  createSession: async (sessionData) => {
+    return await apiRequest('/study-sessions', {
+      method: 'POST',
+      body: JSON.stringify(sessionData),
+    });
+  },
+
+  // Get all study sessions
+  getAllSessions: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters).toString();
+    const endpoint = queryParams ? `/study-sessions?${queryParams}` : '/study-sessions';
+    return await apiRequest(endpoint);
+  },
+
+  // Get study progress (aggregated by course)
+  getProgress: async (days = 30) => {
+    return await apiRequest(`/study-sessions/progress?days=${days}`);
+  },
+
+  // Get weekly and monthly statistics
+  getWeeklyMonthlyStats: async () => {
+    return await apiRequest('/study-sessions/weekly-monthly');
+  },
+
+  // Get statistics for a specific course
+  getCourseStats: async (courseName) => {
+    return await apiRequest(`/study-sessions/course/${encodeURIComponent(courseName)}`);
+  },
+
+  // Delete a study session
+  deleteSession: async (id) => {
+    return await apiRequest(`/study-sessions/${id}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 export default userAPI;
