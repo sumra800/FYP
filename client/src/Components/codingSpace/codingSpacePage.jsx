@@ -231,95 +231,161 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
       <header className="top-header">
         <div className="header-content">
           <div className="logo">
-            <div className="logo-icon">📚</div>
+            <div className="logo-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
             <span className="logo-text">Study Buddy</span>
           </div>
-          
+
           <nav className="nav-links">
             <button className="nav-link" onClick={onNavigateToDashboard}>
-              <span className="nav-icon">🏠</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </span>
               Dashboard
             </button>
             <button className="nav-link">
-              <span className="nav-icon">👥</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </span>
               Study Partners
             </button>
             <button className="nav-link active">
-              <span className="nav-icon">&lt;/&gt;</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+              </span>
               Coding Environment
             </button>
             <button className="nav-link" onClick={onNavigateToProductivity}>
-              <span className="nav-icon">📋</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+              </span>
               Productivity Tools
             </button>
             <button className="nav-link" onClick={onNavigateToResources}>
-              <span className="nav-icon">📑</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </span>
               Resources
             </button>
             <button className="nav-link">
-              <span className="nav-icon">❓</span>
-              Ask-A-Senior Assistant  
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </span>
+              Ask-A-Senior Assistant
             </button>
             <button className="nav-link logout-link" onClick={handleLogout}>
-              <span className="nav-icon">🚪</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </span>
               Logout
             </button>
           </nav>
         </div>
       </header>
 
-      <header className="coding-header">
-        <div className="header-content">
-          <div className="logo">
-            <div className="logo-icon">💻</div>
-            <span className="logo-text">Coding Space</span>
-          </div>
-          
-          <div className="header-actions">
-            <button className="upload-btn" onClick={() => setShowUploadForm(!showUploadForm)}>
-              <span className="btn-icon">📤</span>
-              Upload Code
-            </button>
-          </div>
-        </div>
-      </header>
+
 
       <div className="coding-layout">
         {/* Sidebar */}
         <aside className="coding-sidebar">
+          <div className="sidebar-actions">
+            <button className="upload-btn full-width" onClick={() => setShowUploadForm(!showUploadForm)}>
+              <span className="btn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+              </span>
+              Upload Code
+            </button>
+          </div>
           <nav className="coding-nav">
-            <button 
+            <button
               className={`nav-item ${activeTab === "browse" ? "active" : ""}`}
               onClick={() => setActiveTab("browse")}
             >
-              <span className="nav-icon">🔍</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
               <span className="nav-text">Browse Codes</span>
             </button>
-            <button 
+            <button
               className={`nav-item ${activeTab === "my-codes" ? "active" : ""}`}
               onClick={() => {
                 setActiveTab("my-codes");
                 fetchMyCodes();
               }}
             >
-              <span className="nav-icon">📁</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </span>
               <span className="nav-text">My Codes</span>
             </button>
-            <button 
+            <button
               className={`nav-item ${activeTab === "stats" ? "active" : ""}`}
               onClick={() => setActiveTab("stats")}
             >
-              <span className="nav-icon">📊</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10"></line>
+                  <line x1="12" y1="20" x2="12" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+              </span>
               <span className="nav-text">Statistics</span>
             </button>
-            <button 
+            <button
               className={`nav-item ${activeTab === "leaderboard" ? "active" : ""}`}
               onClick={() => {
                 setActiveTab("leaderboard");
                 fetchLeaderboard();
               }}
             >
-              <span className="nav-icon">🏆</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                  <path d="M4 22h16"></path>
+                  <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                  <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
+                </svg>
+              </span>
               <span className="nav-text">Leaderboard</span>
             </button>
           </nav>
@@ -333,14 +399,14 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
               <div className="upload-form">
                 <div className="form-header">
                   <h2>Upload New Code</h2>
-                  <button 
-                    className="close-btn" 
+                  <button
+                    className="close-btn"
                     onClick={() => setShowUploadForm(false)}
                   >
                     ✕
                   </button>
                 </div>
-                
+
                 <form onSubmit={handleUploadCode}>
                   <div className="form-row">
                     <input
@@ -377,7 +443,7 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                       <option value="other">Other</option>
                     </select>
                   </div>
-                  
+
                   <textarea
                     name="description"
                     placeholder="Description (optional)"
@@ -386,7 +452,7 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                     className="form-textarea"
                     rows="3"
                   />
-                  
+
                   <input
                     type="text"
                     placeholder="Tags (comma-separated)"
@@ -394,7 +460,7 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                     onChange={handleTagsChange}
                     className="form-input"
                   />
-                  
+
                   <textarea
                     name="code"
                     placeholder="Paste your code here..."
@@ -404,7 +470,7 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                     className="code-textarea"
                     rows="15"
                   />
-                  
+
                   <div className="form-actions">
                     <button type="button" onClick={() => setShowUploadForm(false)} className="cancel-btn">
                       Cancel
@@ -456,7 +522,7 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                     <option value="sql">SQL</option>
                     <option value="other">Other</option>
                   </select>
-                  
+
                   <select
                     value={`${filters.sortBy}-${filters.sortOrder}`}
                     onChange={(e) => {
@@ -495,12 +561,12 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                           <span className="stat">💬 {code.comments?.length || 0}</span>
                         </div>
                       </div>
-                      
+
                       <h3 className="code-title">{code.title}</h3>
                       {code.description && (
                         <p className="code-description">{code.description}</p>
                       )}
-                      
+
                       <div className="code-meta">
                         <div className="code-author">
                           <span className="author-name">
@@ -512,7 +578,7 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                           <span className="code-date">{formatDate(code.createdAt)}</span>
                         </div>
                       </div>
-                      
+
                       {code.tags && code.tags.length > 0 && (
                         <div className="code-tags">
                           {code.tags.map((tag, index) => (
@@ -520,19 +586,21 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                           ))}
                         </div>
                       )}
-                      
+
                       <div className="code-actions">
-                        <button 
+                        <button
                           className="view-btn"
                           onClick={() => handleViewCode(code._id)}
                         >
                           View Code
                         </button>
-                        <button 
+                        <button
                           className="like-btn"
                           onClick={() => handleToggleLike(code._id)}
                         >
-                          ❤️
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill={code.likes?.includes(user?._id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                          </svg>
                         </button>
                       </div>
                     </div>
@@ -563,21 +631,37 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                           <span className="language-name">{code.language}</span>
                         </div>
                         <div className="code-stats">
-                          <span className="stat">👁️ {code.views}</span>
-                          <span className="stat">❤️ {code.likes?.length || 0}</span>
-                          <span className="stat">💬 {code.comments?.length || 0}</span>
+                          <span className="stat">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                              <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            {code.views}
+                          </span>
+                          <span className="stat">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            {code.likes?.length || 0}
+                          </span>
+                          <span className="stat">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            </svg>
+                            {code.comments?.length || 0}
+                          </span>
                         </div>
                       </div>
-                      
+
                       <h3 className="code-title">{code.title}</h3>
                       {code.description && (
                         <p className="code-description">{code.description}</p>
                       )}
-                      
+
                       <div className="code-meta">
                         <span className="code-date">{formatDate(code.createdAt)}</span>
                       </div>
-                      
+
                       {code.tags && code.tags.length > 0 && (
                         <div className="code-tags">
                           {code.tags.map((tag, index) => (
@@ -585,19 +669,24 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                           ))}
                         </div>
                       )}
-                      
+
                       <div className="code-actions">
-                        <button 
+                        <button
                           className="view-btn"
                           onClick={() => handleViewCode(code._id)}
                         >
                           View Code
                         </button>
-                        <button 
+                        <button
                           className="delete-btn"
                           onClick={() => handleDeleteCode(code._id)}
                         >
-                          🗑️
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
                         </button>
                       </div>
                     </div>
@@ -636,15 +725,30 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                   {leaderboard.map((user, index) => (
                     <div key={user._id} className={`leaderboard-item rank-${index + 1}`}>
                       <div className="rank-badge">
-                        {index === 0 && "🥇"}
-                        {index === 1 && "🥈"}
-                        {index === 2 && "🥉"}
+                        {index === 0 && (
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="8" r="7"></circle>
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                          </svg>
+                        )}
+                        {index === 1 && (
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C0C0C0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="8" r="7"></circle>
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                          </svg>
+                        )}
+                        {index === 2 && (
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#CD7F32" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="8" r="7"></circle>
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                          </svg>
+                        )}
                         {index > 2 && `#${index + 1}`}
                       </div>
                       <div className="user-info">
                         {user.profilePicture ? (
-                          <img 
-                            src={`http://localhost:7000${user.profilePicture}`} 
+                          <img
+                            src={`http://localhost:7000${user.profilePicture}`}
                             alt={user.fullName}
                             className="user-avatar"
                           />
@@ -659,7 +763,12 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                         </div>
                       </div>
                       <div className="user-score-display">
-                        <span className="score-value">⭐ {user.score}</span>
+                        <span className="score-value">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', color: '#fbbf24' }}>
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                          </svg>
+                          {user.score}
+                        </span>
                         <span className="score-label">points</span>
                       </div>
                     </div>
@@ -680,14 +789,17 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                 <span className="language-icon">{getLanguageIcon(selectedCode.language)}</span>
                 <h2>{selectedCode.title}</h2>
               </div>
-              <button 
-                className="close-btn" 
+              <button
+                className="close-btn"
                 onClick={() => setSelectedCode(null)}
               >
-                ✕
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
               </button>
             </div>
-            
+
             <div className="modal-content">
               <div className="code-info">
                 <div className="code-author">
@@ -697,11 +809,11 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                   <span>•</span>
                   <span>{selectedCode.language}</span>
                 </div>
-                
+
                 {selectedCode.description && (
                   <p className="code-description">{selectedCode.description}</p>
                 )}
-                
+
                 {selectedCode.tags && selectedCode.tags.length > 0 && (
                   <div className="code-tags">
                     {selectedCode.tags.map((tag, index) => (
@@ -710,31 +822,40 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                   </div>
                 )}
               </div>
-              
+
               <div className="code-display">
                 <div className="code-header">
                   <span className="language-badge" style={{ backgroundColor: getLanguageColor(selectedCode.language) }}>
                     {selectedCode.language}
                   </span>
                   <div className="code-actions">
-                    <button 
+                    <button
                       className="like-btn"
                       onClick={() => handleToggleLike(selectedCode._id)}
                     >
-                      ❤️ {selectedCode.likes?.length || 0}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill={selectedCode.likes?.includes(user?._id) ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      </svg>
+                      {selectedCode.likes?.length || 0}
                     </button>
-                    <span className="views-count">👁️ {selectedCode.views}</span>
+                    <span className="views-count">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      {selectedCode.views}
+                    </span>
                   </div>
                 </div>
                 <pre className="code-content">
                   <code>{selectedCode.code}</code>
                 </pre>
               </div>
-              
+
               {/* Comments Section */}
               <div className="comments-section">
                 <h3>Comments ({selectedCode.comments?.length || 0})</h3>
-                
+
                 <form onSubmit={handleAddComment} className="comment-form">
                   <textarea
                     placeholder="Add a comment..."
@@ -747,7 +868,7 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                     Post Comment
                   </button>
                 </form>
-                
+
                 <div className="comments-list">
                   {selectedCode.comments && selectedCode.comments.length > 0 ? (
                     selectedCode.comments.map((comment, index) => (
@@ -770,16 +891,16 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
                         </div>
                         <p className="comment-text">{comment.comment}</p>
                         {/* Show approve button only if user is the code author and comment is not yet approved */}
-                        {user && selectedCode.userId?._id === user._id && 
-                         !comment.isApproved && 
-                         comment.userId?._id !== user._id && (
-                          <button 
-                            className="approve-btn"
-                            onClick={() => handleApproveComment(comment._id)}
-                          >
-                            ✓ Approve Comment (Award 10 points)
-                          </button>
-                        )}
+                        {user && selectedCode.userId?._id === user._id &&
+                          !comment.isApproved &&
+                          comment.userId?._id !== user._id && (
+                            <button
+                              className="approve-btn"
+                              onClick={() => handleApproveComment(comment._id)}
+                            >
+                              ✓ Approve Comment (Award 10 points)
+                            </button>
+                          )}
                       </div>
                     ))
                   ) : (

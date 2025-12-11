@@ -6,6 +6,9 @@ import SignupPage from "./src/Components/signup/signupPage";
 import ProfilePage from "./src/Components/profile/profilePage";
 import DashboardPage from "./src/Components/dashboard/dashboardPage";
 import ProductivityPage from "./src/Components/productivity/productivityPage";
+import AboutPage from "./src/Components/about/aboutPage";
+import FeaturesPage from "./src/Components/features/featuresPage";
+import ContactPage from "./src/Components/contact/contactPage";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("landing");
@@ -34,10 +37,28 @@ function App() {
     setCurrentPage("productivity");
   };
 
+  const navigateToAbout = () => {
+    setCurrentPage("about");
+  };
+
+  const navigateToFeatures = () => {
+    setCurrentPage("features");
+  };
+
+  const navigateToContact = () => {
+    setCurrentPage("contact");
+  };
+
   return (
     <div className="App">
       {currentPage === "landing" && (
-        <LandingPage onNavigateToSignup={navigateToSignup} onNavigateToLogin={navigateToLogin} />
+        <LandingPage
+          onNavigateToSignup={navigateToSignup}
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToAbout={navigateToAbout}
+          onNavigateToFeatures={navigateToFeatures}
+          onNavigateToContact={navigateToContact}
+        />
       )}
       {currentPage === "login" && (
         <LoginPage onNavigateToSignup={navigateToSignup} onNavigateToLanding={navigateToLanding} />
@@ -53,6 +74,15 @@ function App() {
       )}
       {currentPage === "productivity" && (
         <ProductivityPage />
+      )}
+      {currentPage === "about" && (
+        <AboutPage onNavigateToLanding={navigateToLanding} />
+      )}
+      {currentPage === "features" && (
+        <FeaturesPage onNavigateToLanding={navigateToLanding} />
+      )}
+      {currentPage === "contact" && (
+        <ContactPage onNavigateToLanding={navigateToLanding} />
       )}
     </div>
   );

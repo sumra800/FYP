@@ -16,8 +16,7 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
   const [reminderError, setReminderError] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAddReminderForm, setShowAddReminderForm] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [newAssignment, setNewAssignment] = useState({
     title: "",
     description: "",
@@ -37,7 +36,7 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
   const [alerts, setAlerts] = useState([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [alarmSound, setAlarmSound] = useState(null);
-  
+
   // Event-related state
   const [events, setEvents] = useState([]);
   const [eventLoading, setEventLoading] = useState(true);
@@ -75,17 +74,17 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
       oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
-      
+
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-      
+
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.5);
     };
@@ -93,10 +92,10 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
     // Create a simple audio element for alarm
     const audio = new Audio();
     audio.preload = 'auto';
-    
+
     // Set up the alarm sound function
     audio.addEventListener('play', createAlarmSound);
-    
+
     setAlarmSound(audio);
   }, []);
 
@@ -165,32 +164,32 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
     try {
       const response = await reminderAPI.getUpcomingReminders(24); // Check next 24 hours
       const upcomingReminders = response.reminders || [];
-      
+
       console.log("Upcoming reminders:", upcomingReminders);
-      
+
       // Filter reminders that are due today (entire day)
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-      
+
       console.log("Current time:", now);
       console.log("Today range:", today, "to", tomorrow);
-      
+
       const dueReminders = upcomingReminders.filter(reminder => {
         const reminderDate = new Date(reminder.reminderDate);
         const reminderDateTime = new Date(`${reminder.reminderDate}T${reminder.reminderTime}`);
-        
+
         console.log("Checking reminder:", reminder.title, "Date:", reminderDate, "DateTime:", reminderDateTime);
-        
+
         // Check if reminder is due today (any time during the day)
         const isToday = reminderDate >= today && reminderDate < tomorrow;
-        
+
         // For testing: show all reminders that are today, regardless of time
         // In production, you might want: const isDueNow = reminderDateTime <= now;
         const isDueNow = true; // Show all reminders for today
-        
+
         console.log("Is today:", isToday, "Is due now:", isDueNow);
-        
+
         return isToday && isDueNow;
       });
 
@@ -207,19 +206,19 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
             description: reminder.description,
             category: reminder.category
           }));
-          
+
           // Remove duplicates and add new alerts
           const existingIds = prev.map(alert => alert.id);
           const uniqueNewAlerts = newAlerts.filter(alert => !existingIds.includes(alert.id));
-          
+
           console.log("New alerts to show:", uniqueNewAlerts);
-          
+
           // Play alarm sound for new alerts
           if (uniqueNewAlerts.length > 0) {
             console.log("Playing alarm sound");
             playAlarmSound();
           }
-          
+
           return [...prev, ...uniqueNewAlerts];
         });
       }
@@ -367,24 +366,24 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
     if (soundEnabled) {
       try {
         console.log("Attempting to play alarm sound...");
-        
+
         // Try Web Audio API first
         if (window.AudioContext || window.webkitAudioContext) {
           const audioContext = new (window.AudioContext || window.webkitAudioContext)();
           const oscillator = audioContext.createOscillator();
           const gainNode = audioContext.createGain();
-          
+
           oscillator.connect(gainNode);
           gainNode.connect(audioContext.destination);
-          
+
           // Create a simple beep pattern
           oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
           oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
           oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
-          
+
           gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
           gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-          
+
           oscillator.start(audioContext.currentTime);
           oscillator.stop(audioContext.currentTime + 0.4);
           console.log("Web Audio API alarm sound played successfully");
@@ -417,7 +416,7 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
       description: 'This is a test reminder to check if the cloud notification works.',
       category: 'Test'
     };
-    
+
     setAlerts(prev => [...prev, testAlert]);
     playAlarmSound();
   };
@@ -430,24 +429,6 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
-
-  const toggleHamburgerMenu = () => {
-    setHamburgerMenuOpen(!hamburgerMenuOpen);
-  };
-
-  // Close hamburger menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (hamburgerMenuOpen && !event.target.closest('.hamburger-menu')) {
-        setHamburgerMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [hamburgerMenuOpen]);
 
   // Fetch events on component mount
   useEffect(() => {
@@ -465,9 +446,9 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
   const fetchEvents = async () => {
     setEventLoading(true);
     try {
-      const response = await eventAPI.getAllEvents({ 
-        isUpcoming: 'true', 
-        sortBy: 'eventDate', 
+      const response = await eventAPI.getAllEvents({
+        isUpcoming: 'true',
+        sortBy: 'eventDate',
         sortOrder: 'asc',
         limit: 20
       });
@@ -499,7 +480,7 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
         maxAttendees: newEvent.maxAttendees ? parseInt(newEvent.maxAttendees) : null,
         registrationDeadline: newEvent.registrationDeadline || null
       };
-      
+
       await eventAPI.createEvent(eventData);
       setNewEvent({
         title: "",
@@ -548,11 +529,11 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
 
   const formatEventDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   };
 
@@ -565,7 +546,7 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
   };
 
   const isUserRegistered = (event) => {
-    return event.attendees && event.attendees.some(attendee => 
+    return event.attendees && event.attendees.some(attendee =>
       attendee._id === user._id || attendee === user._id
     );
   };
@@ -577,8 +558,8 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
       {alerts.length > 0 && (
         <div className="cloud-container">
           {alerts.map((alert, index) => (
-            <div 
-              key={alert.id} 
+            <div
+              key={alert.id}
               className={`floating-cloud ${alert.priority}`}
               style={{
                 animationDelay: `${index * 0.5}s`,
@@ -587,7 +568,11 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
               }}
             >
               <div className="cloud-content">
-                <div className="cloud-icon">☁️</div>
+                <div className="cloud-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                  </svg>
+                </div>
                 <div className="cloud-text">
                   <div className="cloud-title">{alert.title}</div>
                   {alert.description && (
@@ -598,12 +583,15 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                     <div className="cloud-category">{alert.category}</div>
                   )}
                 </div>
-                <button 
-                  className="cloud-dismiss" 
+                <button
+                  className="cloud-dismiss"
                   onClick={() => dismissAlert(alert.id)}
                   title="Dismiss reminder"
                 >
-                  ✕
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
                 </button>
               </div>
             </div>
@@ -616,80 +604,55 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
         <div className="header-content">
           {/* Hamburger Menu */}
           <div className="hamburger-menu">
-            <button className="hamburger-btn" onClick={toggleHamburgerMenu}>
+            <button className="hamburger-btn" onClick={toggleSidebar}>
               <span className="hamburger-line"></span>
               <span className="hamburger-line"></span>
               <span className="hamburger-line"></span>
             </button>
-            
-            {/* Dropdown Menu */}
-            {hamburgerMenuOpen && (
-              <div className="hamburger-dropdown">
-                <button className="dropdown-item" onClick={() => { setActiveTab("dashboard"); setHamburgerMenuOpen(false); }}>
-                  <span className="dropdown-icon">🏠</span>
-                  Dashboard
-                </button>
-                <button className="dropdown-item" onClick={() => { setHamburgerMenuOpen(false); }}>
-                  <span className="dropdown-icon">👥</span>
-                  Study Partners
-                </button>
-                <button className="dropdown-item" onClick={() => { onNavigateToCodingSpace(); setHamburgerMenuOpen(false); }}>
-                  <span className="dropdown-icon">&lt;/&gt;</span>
-                  Coding Environment
-                </button>
-                <button className="dropdown-item" onClick={() => { onNavigateToProductivity(); setHamburgerMenuOpen(false); }}>
-                  <span className="dropdown-icon">📋</span>
-                  Productivity Tools
-                </button>
-                <button className="dropdown-item" onClick={() => { setHamburgerMenuOpen(false); }}>
-                  <span className="dropdown-icon">❓</span>
-                  Ask-A-Senior Assistant
-                </button>
-                <button className="dropdown-item" onClick={() => { onNavigateToResources(); setHamburgerMenuOpen(false); }}>
-                  <span className="dropdown-icon">📑</span>
-                  Resources
-                </button>
-                <div className="dropdown-divider"></div>
-                <button className="dropdown-item" onClick={toggleSidebar}>
-                  <span className="dropdown-icon">{sidebarOpen ? "◀" : "▶"}</span>
-                  {sidebarOpen ? "Hide" : "Show"} Sidebar
-                </button>
-                <button className="dropdown-item" onClick={onNavigateToProfile}>
-                  <span className="dropdown-icon">👤</span>
-                  Edit Profile
-                </button>
-                <button className="dropdown-item" onClick={() => { onNavigateToSettings(); setHamburgerMenuOpen(false); }}>
-                  <span className="dropdown-icon">⚙️</span>
-                  Settings
-                </button>
-                <button className="dropdown-item" onClick={handleLogout}>
-                  <span className="dropdown-icon">🚪</span>
-                  Logout
-                </button>
-              </div>
-            )}
           </div>
 
           <div className="logo">
-            <div className="logo-icon">📚</div>
+            <div className="logo-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
             <span className="logo-text">Study Buddy</span>
           </div>
-          
+
           <div className="header-actions">
-            <button 
-              className={`sound-toggle-btn ${soundEnabled ? 'enabled' : 'disabled'}`} 
+            <button
+              className={`sound-toggle-btn ${soundEnabled ? 'enabled' : 'disabled'}`}
               onClick={toggleSound}
               title={soundEnabled ? "Disable alarm sound" : "Enable alarm sound"}
             >
-              <span className="btn-icon">{soundEnabled ? "🔊" : "🔇"}</span>
+              <span className="btn-icon">
+                {soundEnabled ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                )}
+              </span>
               {soundEnabled ? "Sound On" : "Sound Off"}
             </button>
-            <button 
-              className="test-alert-btn" 
+            <button
+              className="test-alert-btn"
               onClick={testAlert}
               title="Test alert notification"
             >
-              <span className="btn-icon">🧪</span>
+              <span className="btn-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                </svg>
+              </span>
               Test Alert
             </button>
           </div>
@@ -700,23 +663,35 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
         {/* Left Sidebar */}
         <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
           <nav className="sidebar-nav">
-            <button 
+            <button
               className={`nav-item ${activeTab === "dashboard" ? "active" : ""}`}
               onClick={() => setActiveTab("dashboard")}
             >
-              <span className="nav-icon">🏠</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </span>
               <span className="nav-text">Dashboard</span>
             </button>
-            
-            <button 
+
+            <button
               className={`nav-item ${activeTab === "partners" ? "active" : ""}`}
               onClick={() => setActiveTab("partners")}
             >
-              <span className="nav-icon">👥</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </span>
               <span className="nav-text">Study Partners</span>
             </button>
-            
-            <button 
+
+            <button
               className={`nav-item ${activeTab === "coding" ? "active" : ""}`}
               onClick={() => {
                 setActiveTab("coding");
@@ -725,11 +700,16 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                 }
               }}
             >
-              <span className="nav-icon">&lt;/&gt;</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+              </span>
               <span className="nav-text">Coding Environment</span>
             </button>
-            
-            <button 
+
+            <button
               className={`nav-item ${activeTab === "tools" ? "active" : ""}`}
               onClick={() => {
                 setActiveTab("tools");
@@ -738,11 +718,16 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                 }
               }}
             >
-              <span className="nav-icon">📋</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+              </span>
               <span className="nav-text">Productivity Tools</span>
             </button>
-            
-            <button 
+
+            <button
               className={`nav-item ${activeTab === "resources" ? "active" : ""}`}
               onClick={() => {
                 setActiveTab("resources");
@@ -751,28 +736,63 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                 }
               }}
             >
-              <span className="nav-icon">📑</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </span>
               <span className="nav-text">Resources</span>
             </button>
-            
-            <button 
+
+            <button
               className={`nav-item ${activeTab === "assistant" ? "active" : ""}`}
               onClick={() => setActiveTab("assistant")}
             >
-              <span className="nav-icon">❓</span>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </span>
               <span className="nav-text">Ask-A-Senior Assistant</span>
+            </button>
+            <button
+              className="nav-item"
+              onClick={onNavigateToProfile}
+              style={{ marginTop: 'auto' }}
+            >
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <span className="nav-text">Edit Profile</span>
             </button>
           </nav>
 
           <div className="sidebar-footer">
-            <button className="nav-item">
-              <span className="nav-icon">⚙️</span>
+            <button className="nav-item" onClick={() => { onNavigateToSettings(); }}>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+              </span>
               <span className="nav-text">Settings</span>
             </button>
-            
-            <button className="nav-item">
-              <span className="nav-icon">❓</span>
-              <span className="nav-text">Help and Feedback</span>
+
+            <button className="nav-item" onClick={handleLogout}>
+              <span className="nav-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </span>
+              <span className="nav-text">Logout</span>
             </button>
           </div>
         </aside>
@@ -782,13 +802,13 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
           {/* Content Header */}
           <div className="content-header">
             <div className="header-left">
-            <h1 className="page-title">Dashboard</h1>
+              <h1 className="page-title">Dashboard</h1>
               <div className="welcome-section">
                 <div className="user-info">
                   {user?.profilePicture ? (
-                    <img 
-                      src={getImageUrl(user.profilePicture)} 
-                      alt="Profile" 
+                    <img
+                      src={getImageUrl(user.profilePicture)}
+                      alt="Profile"
                       className="user-avatar"
                     />
                   ) : (
@@ -817,11 +837,11 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
           {/* Dashboard Content */}
           <div className="dashboard-content">
             {/* Google Classroom Integration */}
-            <GoogleClassroomIntegration 
-              userId={user?._id} 
+            <GoogleClassroomIntegration
+              userId={user?._id}
               onSync={fetchAssignments}
             />
-            
+
             {/* Performance Metrics */}
             <div className="metrics-section">
               <div className="weekly-performance">
@@ -843,13 +863,13 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                     <div className="line-chart">
                       <div className="chart-line"></div>
                       <div className="chart-points">
-                        <div className="point" style={{height: "60%"}}></div>
-                        <div className="point" style={{height: "80%"}}></div>
-                        <div className="point" style={{height: "100%"}}></div>
-                        <div className="point" style={{height: "40%"}}></div>
-                        <div className="point" style={{height: "90%"}}></div>
-                        <div className="point" style={{height: "70%"}}></div>
-                        <div className="point" style={{height: "95%"}}></div>
+                        <div className="point" style={{ height: "60%" }}></div>
+                        <div className="point" style={{ height: "80%" }}></div>
+                        <div className="point" style={{ height: "100%" }}></div>
+                        <div className="point" style={{ height: "40%" }}></div>
+                        <div className="point" style={{ height: "90%" }}></div>
+                        <div className="point" style={{ height: "70%" }}></div>
+                        <div className="point" style={{ height: "95%" }}></div>
                       </div>
                     </div>
                   </div>
@@ -873,16 +893,16 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                   </div>
                   <div className="chart-container">
                     <div className="bar-chart">
-                      <div className="bar" style={{height: "60%"}}>
+                      <div className="bar" style={{ height: "60%" }}>
                         <span className="bar-label">Week 1</span>
                       </div>
-                      <div className="bar" style={{height: "90%"}}>
+                      <div className="bar" style={{ height: "90%" }}>
                         <span className="bar-label">Week 2</span>
                       </div>
-                      <div className="bar" style={{height: "70%"}}>
+                      <div className="bar" style={{ height: "70%" }}>
                         <span className="bar-label">Week 3</span>
                       </div>
-                      <div className="bar" style={{height: "95%"}}>
+                      <div className="bar" style={{ height: "95%" }}>
                         <span className="bar-label">Week 4</span>
                       </div>
                     </div>
@@ -894,9 +914,9 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
             {/* Assignments */}
             <div className="assignments-section">
               <div className="assignments-header">
-              <h2 className="section-title">Assignments</h2>
-                <button 
-                  className="add-assignment-btn" 
+                <h2 className="section-title">Assignments</h2>
+                <button
+                  className="add-assignment-btn"
                   onClick={() => setShowAddForm(!showAddForm)}
                 >
                   + Add Assignment
@@ -982,17 +1002,17 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                     <p>No assignments yet. Add your first assignment above!</p>
                   </div>
                 ) : (
-                <table className="assignments-table">
-                  <thead>
-                    <tr>
-                      <th>Assignment</th>
+                  <table className="assignments-table">
+                    <thead>
+                      <tr>
+                        <th>Assignment</th>
                         <th>Subject</th>
-                      <th>Due Date</th>
-                      <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
                         <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {assignments.map((assignment) => (
                         <tr key={assignment._id}>
                           <td className="assignment-name">
@@ -1000,10 +1020,10 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                               <div className="assignment-title">{assignment.title}</div>
                               {assignment.googleClassroom?.isFromClassroom && (
                                 <span className="classroom-badge" title="From Google Classroom">
-                                  <img 
-                                    src="https://ssl.gstatic.com/classroom/favicon.png" 
-                                    alt="Google Classroom" 
-                                    style={{width: '16px', height: '16px'}}
+                                  <img
+                                    src="https://ssl.gstatic.com/classroom/favicon.png"
+                                    alt="Google Classroom"
+                                    style={{ width: '16px', height: '16px' }}
                                   />
                                 </span>
                               )}
@@ -1012,9 +1032,9 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                               <div className="assignment-description">{assignment.description}</div>
                             )}
                             {assignment.googleClassroom?.alternateLink && (
-                              <a 
-                                href={assignment.googleClassroom.alternateLink} 
-                                target="_blank" 
+                              <a
+                                href={assignment.googleClassroom.alternateLink}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="classroom-link"
                               >
@@ -1043,11 +1063,11 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                             >
                               🗑️
                             </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 )}
               </div>
             </div>
@@ -1057,9 +1077,9 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
               {/* Reminders */}
               <div className="reminders-section">
                 <div className="reminders-header">
-                <h2 className="section-title">Reminders</h2>
-                  <button 
-                    className="add-reminder-btn" 
+                  <h2 className="section-title">Reminders</h2>
+                  <button
+                    className="add-reminder-btn"
                     onClick={() => setShowAddReminderForm(!showAddReminderForm)}
                   >
                     + Add Reminder
@@ -1158,7 +1178,7 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                       {reminders.map((reminder) => (
                         <div key={reminder._id} className="reminder-item">
                           <div className="reminder-content">
-                      <div className="reminder-title">{reminder.title}</div>
+                            <div className="reminder-title">{reminder.title}</div>
                             {reminder.description && (
                               <div className="reminder-description">{reminder.description}</div>
                             )}
@@ -1197,7 +1217,7 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                 <h2 className="section-title">Study Habits Insights</h2>
                 <div className="insights-card">
                   <p className="insights-text">
-                    You've been most productive on Tuesdays and Wednesdays. 
+                    You've been most productive on Tuesdays and Wednesdays.
                     Consider scheduling more study sessions during these days.
                   </p>
                 </div>
@@ -1207,8 +1227,8 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
               <div className="explore-section">
                 <div className="section-header">
                   <h2 className="section-title">Explore University Events</h2>
-                  <button 
-                    className="add-event-btn" 
+                  <button
+                    className="add-event-btn"
                     onClick={() => setShowAddEventForm(!showAddEventForm)}
                   >
                     {showAddEventForm ? 'Cancel' : '+ Add Event'}
@@ -1423,14 +1443,14 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                           )}
                           <div className="event-actions">
                             {isUserRegistered(event) ? (
-                              <button 
+                              <button
                                 className="unregister-btn"
                                 onClick={() => handleUnregisterFromEvent(event._id)}
                               >
                                 Unregister
                               </button>
                             ) : (
-                              <button 
+                              <button
                                 className="register-btn"
                                 onClick={() => handleRegisterForEvent(event._id)}
                                 disabled={event.isFull || !event.isRegistrationOpen}

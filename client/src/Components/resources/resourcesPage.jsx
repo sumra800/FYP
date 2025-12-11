@@ -6,13 +6,13 @@ import "./resourcesPage.css";
 const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigateToProductivity, onNavigateToLanding }) => {
   const { logout, user } = useAuth();
   const [activeTab, setActiveTab] = useState("pastPapers");
-  
+
   // Resources state
   const [pastPapers, setPastPapers] = useState([]);
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   // Upload form state
   const [uploadFormData, setUploadFormData] = useState({
     title: "",
@@ -116,7 +116,7 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
 
   const handleUploadSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     if (!uploadFormData.courseName || !uploadFormData.year || !uploadFormData.semester || !uploadFormData.file) {
       alert("Please fill in all required fields and select a file");
@@ -138,10 +138,10 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
       formData.append("file", uploadFormData.file);
 
       await resourceAPI.uploadResource(formData);
-      
+
       setUploadSuccess(true);
       alert("Resource uploaded successfully!");
-      
+
       // Reset form
       setUploadFormData({
         title: "",
@@ -152,14 +152,14 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
         description: "",
         file: null,
       });
-      
+
       // Refresh the resources list
       if (uploadFormData.resourceType === "pastPaper") {
         fetchPastPapers();
       } else if (uploadFormData.resourceType === "notes") {
         fetchNotes();
       }
-      
+
       // Switch to the appropriate tab
       setTimeout(() => {
         setActiveTab(uploadFormData.resourceType === "pastPaper" ? "pastPapers" : "notes");
@@ -190,37 +190,81 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
       <header className="top-header">
         <div className="header-content">
           <div className="logo">
-            <div className="logo-icon">📚</div>
+            <div className="logo-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
             <span className="logo-text">Study Buddy</span>
           </div>
-          
+
           <nav className="nav-links">
             <button className="nav-link" onClick={onNavigateToDashboard}>
-              <span className="nav-icon">🏠</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </span>
               Dashboard
             </button>
             <button className="nav-link">
-              <span className="nav-icon">👥</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </span>
               Study Partners
             </button>
             <button className="nav-link" onClick={onNavigateToCodingSpace}>
-              <span className="nav-icon">&lt;/&gt;</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+              </span>
               Coding Environment
             </button>
             <button className="nav-link" onClick={onNavigateToProductivity}>
-              <span className="nav-icon">📋</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+              </span>
               Productivity Tools
             </button>
             <button className="nav-link active">
-              <span className="nav-icon">📑</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </span>
               Resources
             </button>
             <button className="nav-link">
-              <span className="nav-icon">❓</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </span>
               Ask-A-Senior Assistant
             </button>
             <button className="nav-link logout-link" onClick={handleLogout}>
-              <span className="nav-icon">🚪</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </span>
               Logout
             </button>
           </nav>
@@ -265,7 +309,7 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
             {activeTab === "pastPapers" && (
               <div className="past-papers-section">
                 <h2 className="section-title">Past Papers</h2>
-                
+
                 {loading ? (
                   <div className="loading-state">Loading past papers...</div>
                 ) : error ? (
@@ -312,7 +356,7 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
             {activeTab === "notes" && (
               <div className="notes-section">
                 <h2 className="section-title">Shared Notes</h2>
-                
+
                 {loading ? (
                   <div className="loading-state">Loading notes...</div>
                 ) : error ? (
@@ -361,12 +405,12 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
             {activeTab === "upload" && (
               <div className="upload-section">
                 <h2 className="section-title">Upload Resources</h2>
-                
+
                 <div className="upload-card">
                   <form className="upload-form" onSubmit={handleUploadSubmit}>
                     <div className="form-group">
                       <label className="form-label">Resource Type</label>
-                      <select 
+                      <select
                         className="form-select"
                         name="resourceType"
                         value={uploadFormData.resourceType}
@@ -380,9 +424,9 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
 
                     <div className="form-group">
                       <label className="form-label">Course Name *</label>
-                      <input 
-                        type="text" 
-                        className="form-input" 
+                      <input
+                        type="text"
+                        className="form-input"
                         placeholder="e.g., Data Structures and Algorithms"
                         name="courseName"
                         value={uploadFormData.courseName}
@@ -394,9 +438,9 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
                     <div className="form-row">
                       <div className="form-group">
                         <label className="form-label">Year *</label>
-                        <input 
-                          type="text" 
-                          className="form-input" 
+                        <input
+                          type="text"
+                          className="form-input"
                           placeholder="e.g., 2023"
                           name="year"
                           value={uploadFormData.year}
@@ -407,7 +451,7 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
 
                       <div className="form-group">
                         <label className="form-label">Semester *</label>
-                        <select 
+                        <select
                           className="form-select"
                           name="semester"
                           value={uploadFormData.semester}
@@ -424,8 +468,8 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
 
                     <div className="form-group">
                       <label className="form-label">Description</label>
-                      <textarea 
-                        className="form-textarea" 
+                      <textarea
+                        className="form-textarea"
                         rows="4"
                         placeholder="Add a brief description of the resource..."
                         name="description"
@@ -436,22 +480,28 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
 
                     <div className="form-group">
                       <label className="form-label">Upload File *</label>
-                      <div 
+                      <div
                         className={`file-upload-area ${isDragging ? "dragging" : ""}`}
                         onDragEnter={handleDragEnter}
                         onDragLeave={handleDragLeave}
                         onDragOver={handleDragOver}
                         onDrop={handleDrop}
                       >
-                        <input 
-                          type="file" 
-                          id="file-upload" 
+                        <input
+                          type="file"
+                          id="file-upload"
                           className="file-input"
                           onChange={(e) => handleFileChange(e.target.files[0])}
                           accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png"
                         />
                         <label htmlFor="file-upload" className="file-upload-label">
-                          <span className="upload-icon">📁</span>
+                          <span className="upload-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                              <polyline points="17 8 12 3 7 8"></polyline>
+                              <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                          </span>
                           {uploadFormData.file ? (
                             <span className="upload-text">{uploadFormData.file.name}</span>
                           ) : (
@@ -474,16 +524,16 @@ const ResourcesPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavig
                     </div>
 
                     <div className="form-actions">
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         className="btn-cancel"
                         onClick={handleCancelUpload}
                         disabled={uploadLoading}
                       >
                         Cancel
                       </button>
-                      <button 
-                        type="submit" 
+                      <button
+                        type="submit"
                         className="btn-upload"
                         disabled={uploadLoading}
                       >

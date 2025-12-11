@@ -16,7 +16,7 @@
 }
 
 /* Header Styles */
-.settings-header {
+.top-header {
   background-color: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 0;
@@ -42,55 +42,37 @@
 }
 
 .logo-icon {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  border-radius: 6px;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  color: white;
 }
 
-.logo-text {
+.logo-icon svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.settings-page .logo-text {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: transparent !important;
 }
 
-.header-actions {
+.nav-links {
   display: flex;
   gap: 1rem;
   align-items: center;
 }
 
-.back-btn {
-  background-color: var(--btn-primary);
-  color: var(--btn-text);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.back-btn:hover {
-  background-color: var(--btn-primary-hover);
-  transform: translateY(-1px);
-}
-
-.back-arrow {
-  font-size: 1.2rem;
-}
-
-.logout-btn {
-  background: #dc3545;
-  color: white;
+.nav-link {
+  background: none;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 6px;
@@ -101,15 +83,32 @@
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: inherit;
 }
 
-.logout-btn:hover {
-  background: #c82333;
+.nav-link:hover {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   transform: translateY(-1px);
 }
 
-.logout-icon {
-  font-size: 1rem;
+.nav-link.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+}
+
+.nav-link.logout-link {
+  background: #dc3545;
+  color: white;
+}
+
+.nav-link.logout-link:hover {
+  background: #c82333;
+  color: white;
+  transform: translateY(-1px);
 }
 
 /* Main Content */
@@ -129,10 +128,14 @@
   text-align: center;
 }
 
-.settings-title {
+.settings-page .settings-title {
   font-size: 3rem;
   font-weight: 700;
-  color: var(--text-primary);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  color: transparent !important;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
@@ -429,11 +432,11 @@
   .settings-container {
     max-width: 800px;
   }
-  
+
   .settings-title {
     font-size: 2.5rem;
   }
-  
+
   .settings-icon {
     font-size: 2.5rem;
   }
@@ -445,66 +448,66 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
-  
+
   .logo-text {
     font-size: 1.3rem;
   }
-  
+
   .header-actions {
     gap: 0.75rem;
   }
-  
+
   .back-btn,
   .logout-btn {
     padding: 0.4rem 0.8rem;
     font-size: 0.85rem;
   }
-  
+
   .settings-main {
     padding: 1.5rem 1rem;
   }
-  
+
   .settings-page-header {
     margin-bottom: 2rem;
   }
-  
+
   .settings-title {
     font-size: 2rem;
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .settings-icon {
     font-size: 2rem;
   }
-  
+
   .settings-subtitle {
     font-size: 1.1rem;
   }
-  
+
   .settings-section {
     padding: 1.5rem;
   }
-  
+
   .section-title {
     font-size: 1.3rem;
   }
-  
+
   .setting-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .setting-control {
     width: 100%;
     align-items: stretch;
   }
-  
+
   .action-btn {
     width: 100%;
   }
-  
+
   .preview-card {
     max-width: 100%;
   }
@@ -514,86 +517,85 @@
   .logo {
     gap: 0.4rem;
   }
-  
+
   .logo-icon {
     width: 28px;
     height: 28px;
     font-size: 16px;
   }
-  
+
   .logo-text {
     font-size: 1.2rem;
   }
-  
+
   .header-actions {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .settings-title {
     font-size: 1.75rem;
   }
-  
+
   .settings-icon {
     font-size: 1.75rem;
   }
-  
+
   .settings-subtitle {
     font-size: 1rem;
   }
-  
+
   .settings-section {
     padding: 1.25rem;
   }
-  
+
   .section-title {
     font-size: 1.2rem;
   }
-  
+
   .section-icon {
     font-size: 1.3rem;
   }
-  
+
   .settings-card {
     padding: 1.25rem;
   }
-  
+
   .setting-label {
     font-size: 1rem;
   }
-  
+
   .label-icon {
     font-size: 1.15rem;
   }
-  
+
   .setting-description {
     font-size: 0.85rem;
   }
-  
+
   .theme-toggle {
     width: 65px;
     height: 33px;
   }
-  
+
   .toggle-slider {
     width: 24px;
     height: 24px;
   }
-  
+
   .toggle-slider.active {
     transform: translateX(31px);
   }
-  
+
   .preview-card {
     padding: 1.25rem;
   }
-  
+
   .app-name {
     font-size: 1.3rem;
   }
-  
+
   .app-description {
     font-size: 0.9rem;
   }
 }
-

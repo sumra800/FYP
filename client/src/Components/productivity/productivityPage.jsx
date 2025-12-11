@@ -19,7 +19,7 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
   ]);
   const [newTask, setNewTask] = useState("");
   const [newDueDate, setNewDueDate] = useState("");
-  
+
   // Study session tracking
   const [sessionStartTime, setSessionStartTime] = useState(null);
   const [initialTimerValue, setInitialTimerValue] = useState({ hours: 0, minutes: 25, seconds: 0 });
@@ -36,7 +36,7 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
       interval = setInterval(() => {
         setTimer(prevTimer => {
           let { hours, minutes, seconds } = prevTimer;
-          
+
           if (seconds > 0) {
             seconds--;
           } else if (minutes > 0) {
@@ -51,7 +51,7 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
             setIsPaused(false);
             return { hours: 0, minutes: 0, seconds: 0 };
           }
-          
+
           return { hours, minutes, seconds };
         });
       }, 1000);
@@ -77,19 +77,19 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
   const endTimer = async () => {
     if (isRunning && sessionStartTime) {
       const endTime = new Date();
-      
+
       // Calculate time studied (initial time - remaining time)
       const initialSeconds = (initialTimerValue.hours * 3600) + (initialTimerValue.minutes * 60) + initialTimerValue.seconds;
       const remainingSeconds = (timer.hours * 3600) + (timer.minutes * 60) + timer.seconds;
       const studiedSeconds = initialSeconds - remainingSeconds;
-      
+
       if (studiedSeconds > 0 && subjectName.trim()) {
         const duration = {
           hours: Math.floor(studiedSeconds / 3600),
           minutes: Math.floor((studiedSeconds % 3600) / 60),
           seconds: studiedSeconds % 60
         };
-        
+
         try {
           await studySessionAPI.createSession({
             courseName: subjectName.trim(),
@@ -98,9 +98,9 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
             endTime,
             totalSeconds: studiedSeconds
           });
-          
+
           console.log("Study session saved successfully!");
-          
+
           // Refresh progress data and history
           fetchProgressData();
           fetchStudyHistory();
@@ -110,7 +110,7 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
         }
       }
     }
-    
+
     setIsRunning(false);
     setIsPaused(false);
     setTimer({ hours: 0, minutes: 0, seconds: 0 });
@@ -126,7 +126,7 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
   const handleTimeChange = (unit, value) => {
     const numValue = parseInt(value) || 0;
     if (numValue < 0) return;
-    
+
     if (unit === "hours" && numValue > 23) return;
     if (unit === "minutes" && numValue > 59) return;
     if (unit === "seconds" && numValue > 59) return;
@@ -148,24 +148,24 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
   };
 
   const toggleTodo = (id) => {
-    setTodos(todos.map(todo => 
+    setTodos(todos.map(todo =>
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
     ));
   };
 
   const addTask = () => {
     if (newTask.trim() === "") return;
-    
+
     const newId = Math.max(...todos.map(todo => todo.id), 0) + 1;
     const dueText = newDueDate ? `Due: ${newDueDate}` : "No due date";
-    
+
     const newTodo = {
       id: newId,
       text: newTask.trim(),
       due: dueText,
       completed: false
     };
-    
+
     setTodos([...todos, newTodo]);
     setNewTask("");
     setNewDueDate("");
@@ -247,37 +247,81 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
       <header className="top-header">
         <div className="header-content">
           <div className="logo">
-            <div className="logo-icon">📚</div>
+            <div className="logo-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
             <span className="logo-text">Study Buddy</span>
           </div>
-          
+
           <nav className="nav-links">
             <button className="nav-link" onClick={onNavigateToDashboard}>
-              <span className="nav-icon">🏠</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </span>
               Dashboard
             </button>
             <button className="nav-link">
-              <span className="nav-icon">👥</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </span>
               Study Partners
             </button>
             <button className="nav-link" onClick={onNavigateToCodingSpace}>
-              <span className="nav-icon">&lt;/&gt;</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+              </span>
               Coding Environment
             </button>
             <button className="nav-link active">
-              <span className="nav-icon">📋</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+              </span>
               Productivity Tools
             </button>
             <button className="nav-link" onClick={onNavigateToResources}>
-              <span className="nav-icon">📑</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </span>
               Resources
             </button>
             <button className="nav-link">
-              <span className="nav-icon">❓</span>
-              Ask-A-Senior Assistant  
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </span>
+              Ask-A-Senior Assistant
             </button>
             <button className="nav-link logout-link" onClick={handleLogout}>
-              <span className="nav-icon">🚪</span>
+              <span className="nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+              </span>
               Logout
             </button>
           </nav>
@@ -296,7 +340,14 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
               <div className="loading-state">Loading progress...</div>
             ) : progressData.length === 0 ? (
               <div className="empty-progress-state">
-                <p>📊 No study sessions recorded yet</p>
+                <p>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px', verticalAlign: 'bottom' }}>
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  </svg>
+                  No study sessions recorded yet
+                </p>
                 <p className="empty-hint">Start a timer to track your study progress!</p>
               </div>
             ) : (
@@ -364,13 +415,13 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
             {/* Time Editor */}
             {!isRunning && (
               <div className="time-editor">
-                <button 
-                  className="edit-time-btn" 
+                <button
+                  className="edit-time-btn"
                   onClick={() => setIsEditing(!isEditing)}
                 >
                   {isEditing ? "Cancel Edit" : "Edit Time"}
                 </button>
-                
+
                 {isEditing && (
                   <div className="time-inputs">
                     <div className="time-input-group">
@@ -431,23 +482,48 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
             <div className="timer-controls">
               {!isRunning ? (
                 <button className="start-btn" onClick={startTimer}>
-                  <span className="btn-icon">▶</span>
+                  <span className="btn-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                  </span>
                   Start
                 </button>
               ) : (
                 <button className="pause-btn" onClick={pauseTimer}>
-                  <span className="btn-icon">{isPaused ? "▶" : "⏸"}</span>
+                  <span className="btn-icon">
+                    {isPaused ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                      </svg>
+                    )}
+                  </span>
                   {isPaused ? "Resume" : "Pause"}
                 </button>
               )}
-              
+
               <button className="end-btn" onClick={endTimer} disabled={!isRunning}>
-                <span className="btn-icon">⏹</span>
+                <span className="btn-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  </svg>
+                </span>
                 End
               </button>
-              
+
               <button className="reset-btn" onClick={resetTimer}>
-                <span className="btn-icon">🔄</span>
+                <span className="btn-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                  </svg>
+                </span>
                 Reset
               </button>
             </div>
@@ -458,11 +534,25 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
         <section className="history-section">
           <div className="history-header">
             <h2 className="section-title">Study History</h2>
-            <button 
+            <button
               className="toggle-history-btn"
               onClick={() => setShowHistory(!showHistory)}
             >
-              {showHistory ? '▼ Hide History' : '▶ Show History'}
+              {showHistory ? (
+                <span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                  Hide History
+                </span>
+              ) : (
+                <span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                  Show History
+                </span>
+              )}
             </button>
           </div>
 
@@ -472,7 +562,13 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
                 <div className="loading-state">Loading study history...</div>
               ) : studyHistory.length === 0 ? (
                 <div className="empty-history-state">
-                  <p>📚 No study sessions yet</p>
+                  <p>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px', verticalAlign: 'bottom' }}>
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    No study sessions yet
+                  </p>
                   <p className="empty-hint">Complete a study session to see it here!</p>
                 </div>
               ) : (
@@ -516,7 +612,7 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
         {/* To-Do List Section */}
         <section className="todo-section">
           <h2 className="section-title">Prioritized To-Do List</h2>
-          
+
           {/* Add Task Form */}
           <div className="add-task-form">
             <div className="form-inputs">
@@ -538,7 +634,12 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
               />
             </div>
             <button className="add-task-btn" onClick={addTask}>
-              <span className="btn-icon">+</span>
+              <span className="btn-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </span>
               Add Task
             </button>
           </div>
@@ -563,8 +664,8 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
                     <div className="todo-text">{todo.text}</div>
                     <div className="todo-due">{todo.due}</div>
                   </label>
-                  <button 
-                    className="delete-btn" 
+                  <button
+                    className="delete-btn"
                     onClick={() => deleteTask(todo.id)}
                     title="Delete task"
                   >

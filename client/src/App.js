@@ -93,7 +93,13 @@ const AppContent = () => {
         <SignupPage onNavigateToLogin={navigateToLogin} onNavigateToProfile={navigateToProfile} onNavigateToLanding={navigateToLanding} />
       )}
       {currentPage === "profile" && (
-        <ProfilePage onNavigateToDashboard={navigateToDashboard} onNavigateToLanding={navigateToLanding} />
+        <ProfilePage
+          onNavigateToDashboard={navigateToDashboard}
+          onNavigateToCodingSpace={navigateToCodingSpace}
+          onNavigateToProductivity={navigateToProductivity}
+          onNavigateToResources={navigateToResources}
+          onNavigateToLanding={navigateToLanding}
+        />
       )}
       {currentPage === "dashboard" && (
         <DashboardPage onNavigateToProfile={navigateToProfile} onNavigateToProductivity={navigateToProductivity} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToSettings={navigateToSettings} onNavigateToResources={navigateToResources} onNavigateToLanding={navigateToLanding} />
@@ -105,7 +111,14 @@ const AppContent = () => {
         <CodingSpacePage onNavigateToDashboard={navigateToDashboard} onNavigateToProductivity={navigateToProductivity} onNavigateToResources={navigateToResources} onNavigateToLanding={navigateToLanding} />
       )}
       {currentPage === "settings" && (
-        <SettingsPage onNavigateToDashboard={navigateToDashboard} onNavigateToProfile={navigateToProfile} onNavigateToLanding={navigateToLanding} />
+        <SettingsPage
+          onNavigateToDashboard={navigateToDashboard}
+          onNavigateToProfile={navigateToProfile}
+          onNavigateToCodingSpace={navigateToCodingSpace}
+          onNavigateToProductivity={navigateToProductivity}
+          onNavigateToResources={navigateToResources}
+          onNavigateToLanding={navigateToLanding}
+        />
       )}
       {currentPage === "resources" && (
         <ResourcesPage onNavigateToDashboard={navigateToDashboard} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToProductivity={navigateToProductivity} onNavigateToLanding={navigateToLanding} />
