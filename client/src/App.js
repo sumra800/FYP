@@ -12,6 +12,9 @@ import ProductivityPage from "./Components/productivity/productivityPage";
 import CodingSpacePage from "./Components/codingSpace/codingSpacePage";
 import SettingsPage from "./Components/settings/settingsPage";
 import ResourcesPage from "./Components/resources/resourcesPage";
+import AboutPage from "./Components/about/aboutPage";
+import ContactPage from "./Components/contact/contactPage";
+import FeaturesPage from "./Components/features/featuresPage";
 
 // Main App Component with Authentication Logic
 const AppContent = () => {
@@ -71,6 +74,18 @@ const AppContent = () => {
     setCurrentPage("resources");
   };
 
+  const navigateToAbout = () => {
+    setCurrentPage("about");
+  };
+
+  const navigateToContact = () => {
+    setCurrentPage("contact");
+  };
+
+  const navigateToFeatures = () => {
+    setCurrentPage("features");
+  };
+
   // Show loading spinner while checking authentication
   if (isLoading) {
     return (
@@ -84,13 +99,44 @@ const AppContent = () => {
   return (
     <div className="App">
       {currentPage === "landing" && (
-        <LandingPage onNavigateToSignup={navigateToSignup} onNavigateToLogin={navigateToLogin} />
+        <LandingPage
+          onNavigateToSignup={navigateToSignup}
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToAbout={navigateToAbout}
+          onNavigateToContact={navigateToContact}
+          onNavigateToFeatures={navigateToFeatures}
+        />
       )}
       {currentPage === "login" && (
-        <LoginPage onNavigateToSignup={navigateToSignup} onNavigateToLanding={navigateToLanding} />
+        <LoginPage
+          onNavigateToSignup={navigateToSignup}
+          onNavigateToLanding={navigateToLanding}
+          onNavigateToAbout={navigateToAbout}
+          onNavigateToContact={navigateToContact}
+          onNavigateToFeatures={navigateToFeatures}
+        />
       )}
       {currentPage === "signup" && (
-        <SignupPage onNavigateToLogin={navigateToLogin} onNavigateToProfile={navigateToProfile} onNavigateToLanding={navigateToLanding} />
+        <SignupPage
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToProfile={navigateToProfile}
+          onNavigateToLanding={navigateToLanding}
+          onNavigateToAbout={navigateToAbout}
+          onNavigateToContact={navigateToContact}
+          onNavigateToFeatures={navigateToFeatures}
+        />
+      )}
+      {currentPage === "about" && (
+        <AboutPage onNavigateToLanding={navigateToLanding} />
+      )}
+      {currentPage === "contacts" && (
+        <ContactPage onNavigateToLanding={navigateToLanding} />
+      )}
+      {currentPage === "contact" && (
+        <ContactPage onNavigateToLanding={navigateToLanding} />
+      )}
+      {currentPage === "features" && (
+        <FeaturesPage onNavigateToLanding={navigateToLanding} />
       )}
       {currentPage === "profile" && (
         <ProfilePage

@@ -1,8 +1,8 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import "./signupPage.css";
 
-const SignupPage = ({ onNavigateToLogin, onNavigateToProfile, onNavigateToLanding }) => {
+const SignupPage = ({ onNavigateToLogin, onNavigateToProfile, onNavigateToLanding, onNavigateToAbout, onNavigateToContact, onNavigateToFeatures }) => {
   const { register, isLoading, error, clearError } = useAuth();
   const [formData, setFormData] = useState({
     fullName: "",
@@ -38,34 +38,74 @@ const SignupPage = ({ onNavigateToLogin, onNavigateToProfile, onNavigateToLandin
   const validateForm = () => {
     const errors = {};
 
+    // Full Name Validation
     if (!formData.fullName.trim()) {
       errors.fullName = "Full name is required";
+    } else if (formData.fullName.trim().length < 2) {
+      errors.fullName = "Name must be at least 2 characters long";
+    } else if (formData.fullName.trim().length > 50) {
+      errors.fullName = "Name must not exceed 50 characters";
+    } else if (!/^[a-zA-Z\s'-]+$/.test(formData.fullName.trim())) {
+      errors.fullName = "Name can only contain letters, spaces, hyphens, and apostrophes";
+    } else if (!/^[a-zA-Z]/.test(formData.fullName.trim())) {
+      errors.fullName = "Name must start with a letter";
     }
 
+    // Email Validation
     if (!formData.email.trim()) {
       errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Please enter a valid email address";
+    } else if (formData.email.trim().length > 100) {
+      errors.email = "Email must not exceed 100 characters";
+    } else if (!/^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email.trim())) {
+      errors.email = "Please enter a valid email address (e.g., user@example.com)";
     }
 
+    // Password Validation
     if (!formData.password) {
       errors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+    } else if (formData.password.length < 8) {
+      errors.password = "Password must be at least 8 characters long";
+    } else if (formData.password.length > 128) {
+      errors.password = "Password must not exceed 128 characters";
+    } else if (!/(?=.*[a-z])/.test(formData.password)) {
+      errors.password = "Password must contain at least one lowercase letter";
+    } else if (!/(?=.*[A-Z])/.test(formData.password)) {
+      errors.password = "Password must contain at least one uppercase letter";
+    } else if (!/(?=.*\d)/.test(formData.password)) {
+      errors.password = "Password must contain at least one number";
+    } else if (!/(?=.*[@$!%*?&#^()_\-+={}[\]:;"'<>,.?/\\|`~])/.test(formData.password)) {
+      errors.password = "Password must contain at least one special character";
+    } else if (/\s/.test(formData.password)) {
+      errors.password = "Password must not contain spaces";
     }
 
+    // Confirm Password Validation
     if (!formData.confirmPassword) {
       errors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Passwords do not match";
     }
 
+    // University Name Validation
     if (!formData.universityName.trim()) {
       errors.universityName = "University name is required";
+    } else if (formData.universityName.trim().length < 3) {
+      errors.universityName = "University name must be at least 3 characters long";
+    } else if (formData.universityName.trim().length > 100) {
+      errors.universityName = "University name must not exceed 100 characters";
+    } else if (!/^[a-zA-Z0-9\s.,'&()-]+$/.test(formData.universityName.trim())) {
+      errors.universityName = "University name contains invalid characters";
     }
 
+    // Department Name Validation
     if (!formData.departmentName.trim()) {
       errors.departmentName = "Department name is required";
+    } else if (formData.departmentName.trim().length < 2) {
+      errors.departmentName = "Department name must be at least 2 characters long";
+    } else if (formData.departmentName.trim().length > 100) {
+      errors.departmentName = "Department name must not exceed 100 characters";
+    } else if (!/^[a-zA-Z0-9\s.,'&()-]+$/.test(formData.departmentName.trim())) {
+      errors.departmentName = "Department name contains invalid characters";
     }
 
     setValidationErrors(errors);
@@ -109,9 +149,9 @@ const SignupPage = ({ onNavigateToLogin, onNavigateToProfile, onNavigateToLandin
           </div>
 
           <nav className="nav-links">
-            <a href="#about" className="nav-link">About</a>
-            <a href="#support" className="nav-link">Support</a>
-            <a href="#login" className="nav-link">Login</a>
+            <span className="nav-link" onClick={onNavigateToAbout} style={{ cursor: 'pointer' }}>About</span>
+            <span className="nav-link" onClick={onNavigateToFeatures} style={{ cursor: 'pointer' }}>Features</span>
+            <span className="nav-link" onClick={onNavigateToContact} style={{ cursor: 'pointer' }}>Contact</span>
           </nav>
         </div>
       </header>
@@ -131,7 +171,7 @@ const SignupPage = ({ onNavigateToLogin, onNavigateToProfile, onNavigateToLandin
             </div>
           )}
 
-          <form className="signup-form" onSubmit={handleSubmit}>
+          <form className="signup-form" onSubmit={handleSubmit} noValidate>
             <div className="form-group">
               <input
                 type="text"
@@ -150,14 +190,13 @@ const SignupPage = ({ onNavigateToLogin, onNavigateToProfile, onNavigateToLandin
 
             <div className="form-group">
               <input
-                type="email"
+                type="text"
                 name="email"
                 placeholder="Email address"
                 className={`form-input ${validationErrors.email ? "error" : ""}`}
                 value={formData.email}
                 onChange={handleChange}
                 disabled={isLoading}
-                required
               />
               {validationErrors.email && (
                 <span className="error-text">{validationErrors.email}</span>
@@ -275,8 +314,9 @@ const SignupPage = ({ onNavigateToLogin, onNavigateToProfile, onNavigateToLandin
             <h3 className="footer-heading">Quick Links</h3>
             <ul className="footer-links">
               <li className="footer-link" onClick={onNavigateToLanding}>Home</li>
-              <li className="footer-link">About</li>
-              <li className="footer-link">Features</li>
+              <li className="footer-link" onClick={onNavigateToAbout}>About</li>
+              <li className="footer-link" onClick={onNavigateToFeatures}>Features</li>
+              <li className="footer-link" onClick={onNavigateToContact}>Contact</li>
             </ul>
           </div>
 

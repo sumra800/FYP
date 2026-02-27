@@ -2,7 +2,7 @@
 import { useAuth } from "../../context/AuthContext";
 import "./loginPage.css";
 
-const LoginPage = ({ onNavigateToSignup, onNavigateToLanding }) => {
+const LoginPage = ({ onNavigateToSignup, onNavigateToLanding, onNavigateToAbout, onNavigateToContact, onNavigateToFeatures }) => {
   const { login, isLoading, error, clearError } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
@@ -85,8 +85,9 @@ const LoginPage = ({ onNavigateToSignup, onNavigateToLanding }) => {
           </div>
 
           <nav className="nav-links">
-            <a href="#about" className="nav-link">About</a>
-            <a href="#contact" className="nav-link">Contact</a>
+            <span className="nav-link" onClick={onNavigateToAbout} style={{ cursor: 'pointer' }}>About</span>
+            <span className="nav-link" onClick={onNavigateToFeatures} style={{ cursor: 'pointer' }}>Features</span>
+            <span className="nav-link" onClick={onNavigateToContact} style={{ cursor: 'pointer' }}>Contact</span>
           </nav>
 
           <div className="header-actions">
@@ -206,8 +207,9 @@ const LoginPage = ({ onNavigateToSignup, onNavigateToLanding }) => {
             <h3 className="footer-heading">Quick Links</h3>
             <ul className="footer-links">
               <li className="footer-link" onClick={onNavigateToLanding}>Home</li>
-              <li className="footer-link">About</li>
-              <li className="footer-link">Features</li>
+              <li className="footer-link" onClick={onNavigateToAbout}>About</li>
+              <li className="footer-link" onClick={onNavigateToFeatures}>Features</li>
+              <li className="footer-link" onClick={onNavigateToContact}>Contact</li>
             </ul>
           </div>
 

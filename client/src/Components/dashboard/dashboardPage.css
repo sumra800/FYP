@@ -320,7 +320,7 @@
 
   /* Sidebar Styles */
   .sidebar {
-    width: 250px;
+    width: 280px;
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
     border-right: 1px solid rgba(59, 130, 246, 0.2);
@@ -333,7 +333,7 @@
 
   /* Sidebar States */
   .sidebar-open {
-    width: 250px;
+    width: 280px;
     transform: translateX(0);
   }
 
@@ -378,6 +378,7 @@
     font-size: 0.95rem;
     color: #4b5563;
     font-weight: 500;
+    white-space: nowrap;
   }
 
   .nav-item:hover {
@@ -522,15 +523,15 @@
     width: 100%;
   }
 
-  .section-title {
+  .dashboard-page .section-title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1f2937;
     margin-bottom: 1rem;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    color: transparent !important;
   }
 
   /* Metrics Section */
