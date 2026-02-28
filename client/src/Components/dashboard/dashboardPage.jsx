@@ -57,7 +57,8 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
     registrationDeadline: "",
     contactEmail: "",
     contactPhone: "",
-    isFeatured: false
+    isFeatured: false,
+    scope: "personal"
   });
 
   // Study session statistics state
@@ -497,7 +498,8 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
         registrationDeadline: "",
         contactEmail: "",
         contactPhone: "",
-        isFeatured: false
+        isFeatured: false,
+        scope: "personal"
       });
       setShowAddEventForm(false);
       fetchEvents();
@@ -1265,6 +1267,32 @@ const DashboardPage = ({ onNavigateToProfile, onNavigateToProductivity, onNaviga
                           <option value="academic">Academic</option>
                           <option value="other">Other</option>
                         </select>
+                      </div>
+                      <div className="form-row">
+                        <div className="scope-selection" style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '10px' }}>
+                          <span style={{ fontWeight: '500', color: '#e2e8f0' }}>Event Scope:</span>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#e2e8f0' }}>
+                            <input
+                              type="radio"
+                              name="scope"
+                              value="personal"
+                              checked={newEvent.scope === 'personal'}
+                              onChange={handleEventInputChange}
+                            />
+                            Personal
+                          </label>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '5px', color: user?.societyPosition ? '#e2e8f0' : '#64748b' }} title={!user?.societyPosition ? "Valid society position required to post society events" : ""}>
+                            <input
+                              type="radio"
+                              name="scope"
+                              value="society"
+                              checked={newEvent.scope === 'society'}
+                              onChange={handleEventInputChange}
+                              disabled={!user?.societyPosition}
+                            />
+                            Society
+                          </label>
+                        </div>
                       </div>
                       <textarea
                         name="description"

@@ -13,6 +13,11 @@ const eventSchema = new mongoose.Schema({
     trim: true,
     maxLength: [2000, "Description cannot exceed 2000 characters"]
   },
+  scope: {
+    type: String,
+    enum: ["personal", "society"],
+    default: "personal"
+  },
   eventType: {
     type: String,
     required: [true, "Event type is required"],
@@ -119,7 +124,7 @@ const eventSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-eventSchema.pre("save", function(next) {
+eventSchema.pre("save", function (next) {
   this.updatedAt = Date.now();
   next();
 });
@@ -132,19 +137,19 @@ eventSchema.index({ tags: 1, isActive: 1 });
 eventSchema.index({ createdBy: 1, createdAt: -1 });
 
 // Virtual for checking if event is full
-eventSchema.virtual('isFull').get(function() {
+eventSchema.virtual('isFull').get(function () {
   return this.maxAttendees && this.currentAttendees >= this.maxAttendees;
 });
 
 // Virtual for checking if registration is open
-eventSchema.virtual('isRegistrationOpen').get(function() {
+eventSchema.virtual('isRegistrationOpen').get(function () {
   if (!this.registrationRequired) return false;
   if (!this.registrationDeadline) return true;
   return new Date() < this.registrationDeadline;
 });
 
 // Virtual for checking if event is upcoming
-eventSchema.virtual('isUpcoming').get(function() {
+eventSchema.virtual('isUpcoming').get(function () {
   const now = new Date();
   const eventDateTime = new Date(`${this.eventDate.toISOString().split('T')[0]}T${this.startTime}`);
   return eventDateTime > now;

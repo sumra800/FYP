@@ -1,4 +1,5 @@
 import Event from "../model/eventModel.js";
+import User from "../model/userModel.js";
 import mongoose from "mongoose";
 
 // Create a new event
@@ -22,24 +23,36 @@ export const createEvent = async (req, res) => {
       contactEmail,
       contactPhone,
       imageUrl,
-      isFeatured
+      isFeatured,
+      scope
     } = req.body;
 
     const createdBy = req.userId;
 
     if (!title || !description || !eventType || !organizer || !location || !eventDate || !startTime || !endTime) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Title, description, event type, organizer, location, event date, start time, and end time are required." 
+      return res.status(400).json({
+        success: false,
+        message: "Title, description, event type, organizer, location, event date, start time, and end time are required."
       });
+    }
+
+    // Validate scope and authorization
+    if (scope === 'society') {
+      const user = await User.findById(createdBy);
+      if (!user || !user.societyPosition) {
+        return res.status(403).json({
+          success: false,
+          message: "Only users with a society position can create society events."
+        });
+      }
     }
 
     // Validate event date is in the future
     const eventDateTime = new Date(`${eventDate}T${startTime}`);
     if (eventDateTime <= new Date()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Event date and time must be in the future." 
+      return res.status(400).json({
+        success: false,
+        message: "Event date and time must be in the future."
       });
     }
 
@@ -47,9 +60,9 @@ export const createEvent = async (req, res) => {
     const startDateTime = new Date(`${eventDate}T${startTime}`);
     const endDateTime = new Date(`${eventDate}T${endTime}`);
     if (endDateTime <= startDateTime) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "End time must be after start time." 
+      return res.status(400).json({
+        success: false,
+        message: "End time must be after start time."
       });
     }
 
@@ -72,6 +85,7 @@ export const createEvent = async (req, res) => {
       contactPhone,
       imageUrl,
       isFeatured: isFeatured || false,
+      scope: scope || 'personal',
       createdBy
     });
 
@@ -126,17 +140,17 @@ export const getAllEvents = async (req, res) => {
     };
 
     const events = await Event.find(query, null, options)
-      .populate('createdBy', 'fullName nickname profilePicture score universityName')
+      .populate('createdBy', 'fullName nickname profilePicture score universityName societyPosition')
       .populate('attendees', 'fullName nickname profilePicture score');
-    
+
     const total = await Event.countDocuments(query);
 
-    res.status(200).json({ 
-      success: true, 
-      events, 
-      total, 
-      page: parseInt(page), 
-      pages: Math.ceil(total / limit) 
+    res.status(200).json({
+      success: true,
+      events,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / limit)
     });
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -153,7 +167,7 @@ export const getEvent = async (req, res) => {
     }
 
     const event = await Event.findById(id)
-      .populate('createdBy', 'fullName nickname profilePicture score universityName')
+      .populate('createdBy', 'fullName nickname profilePicture score universityName societyPosition')
       .populate('attendees', 'fullName nickname profilePicture score');
 
     if (!event || !event.isActive) {
@@ -183,17 +197,17 @@ export const getUserEvents = async (req, res) => {
     };
 
     const events = await Event.find({ createdBy: userId }, null, options)
-      .populate('createdBy', 'fullName nickname profilePicture score universityName')
+      .populate('createdBy', 'fullName nickname profilePicture score universityName societyPosition')
       .populate('attendees', 'fullName nickname profilePicture score');
-    
+
     const total = await Event.countDocuments({ createdBy: userId });
 
-    res.status(200).json({ 
-      success: true, 
-      events, 
-      total, 
-      page: parseInt(page), 
-      pages: Math.ceil(total / limit) 
+    res.status(200).json({
+      success: true,
+      events,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / limit)
     });
   } catch (error) {
     console.error("Error fetching user events:", error);
@@ -216,21 +230,21 @@ export const getUserRegisteredEvents = async (req, res) => {
       sort
     };
 
-    const events = await Event.find({ 
-      attendees: userId, 
-      isActive: true 
+    const events = await Event.find({
+      attendees: userId,
+      isActive: true
     }, null, options)
-      .populate('createdBy', 'fullName nickname profilePicture score universityName')
+      .populate('createdBy', 'fullName nickname profilePicture score universityName societyPosition')
       .populate('attendees', 'fullName nickname profilePicture score');
-    
+
     const total = await Event.countDocuments({ attendees: userId, isActive: true });
 
-    res.status(200).json({ 
-      success: true, 
-      events, 
-      total, 
-      page: parseInt(page), 
-      pages: Math.ceil(total / limit) 
+    res.status(200).json({
+      success: true,
+      events,
+      total,
+      page: parseInt(page),
+      pages: Math.ceil(total / limit)
     });
   } catch (error) {
     console.error("Error fetching user registered events:", error);
@@ -264,7 +278,7 @@ export const updateEvent = async (req, res) => {
       updateData,
       { new: true, runValidators: true }
     ).populate('createdBy', 'fullName nickname profilePicture score universityName')
-     .populate('attendees', 'fullName nickname profilePicture score');
+      .populate('attendees', 'fullName nickname profilePicture score');
 
     res.status(200).json({ success: true, message: "Event updated successfully.", event: updatedEvent });
   } catch (error) {
@@ -384,9 +398,9 @@ export const unregisterFromEvent = async (req, res) => {
 export const getEventStats = async (req, res) => {
   try {
     const totalEvents = await Event.countDocuments({ isActive: true });
-    const upcomingEvents = await Event.countDocuments({ 
-      isActive: true, 
-      eventDate: { $gte: new Date() } 
+    const upcomingEvents = await Event.countDocuments({
+      isActive: true,
+      eventDate: { $gte: new Date() }
     });
     const eventsByType = await Event.aggregate([
       { $match: { isActive: true } },
@@ -395,12 +409,12 @@ export const getEventStats = async (req, res) => {
     ]);
     const featuredEvents = await Event.countDocuments({ isActive: true, isFeatured: true });
 
-    res.status(200).json({ 
-      success: true, 
-      totalEvents, 
-      upcomingEvents, 
-      eventsByType, 
-      featuredEvents 
+    res.status(200).json({
+      success: true,
+      totalEvents,
+      upcomingEvents,
+      eventsByType,
+      featuredEvents
     });
   } catch (error) {
     console.error("Error fetching event stats:", error);
