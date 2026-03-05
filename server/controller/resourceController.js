@@ -7,7 +7,7 @@ import fs from "fs";
 export const createResource = async (req, res) => {
   try {
     const { title, resourceType, courseName, year, semester, description, tags } = req.body;
-    const userId = req.user.id;
+    const userId = req.userId;
 
     // Check if file was uploaded
     if (!req.file) {
@@ -132,7 +132,7 @@ export const getResourcesByType = async (req, res) => {
 // Get user's uploaded resources
 export const getMyResources = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.userId;
 
     const resources = await Resource.find({ uploadedBy: userId })
       .sort({ uploadedAt: -1 });
@@ -206,7 +206,7 @@ export const downloadResource = async (req, res) => {
 export const updateResource = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.userId;
     const { title, description, tags } = req.body;
 
     const resource = await Resource.findById(id);
@@ -243,7 +243,7 @@ export const updateResource = async (req, res) => {
 export const deleteResource = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.userId;
 
     const resource = await Resource.findById(id);
 

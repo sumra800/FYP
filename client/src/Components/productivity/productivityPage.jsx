@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { studySessionAPI } from "../../services/api";
 import "./productivityPage.css";
 
-const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigateToResources, onNavigateToLanding }) => {
+const ProductivityPage = ({ onNavigateToMyProfile, onNavigateToDashboard, onNavigateToCodingSpace, onNavigateToResources, onNavigateToLanding, onNavigateToStudyPartners }) => {
   const { logout } = useAuth();
   const [timer, setTimer] = useState({ hours: 0, minutes: 25, seconds: 0 });
   const [isRunning, setIsRunning] = useState(false);
@@ -269,7 +269,7 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
               </span>
               Dashboard
             </button>
-            <button className="nav-link">
+            <button className="nav-link" onClick={onNavigateToStudyPartners}>
               <span className="nav-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -307,15 +307,14 @@ const ProductivityPage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNa
               </span>
               Resources
             </button>
-            <button className="nav-link">
+            <button className="nav-link my-profile-btn" onClick={onNavigateToMyProfile}>
               <span className="nav-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </span>
-              Ask-A-Senior Assistant
+              My Profile
             </button>
             <button className="nav-link logout-link" onClick={handleLogout}>
               <span className="nav-icon">

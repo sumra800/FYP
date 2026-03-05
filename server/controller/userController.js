@@ -107,7 +107,7 @@ export const signup = async (req, res) => {
       code: error.code,
       stack: error.stack
     });
-    
+
     // Handle MongoDB validation errors
     if (error.name === "ValidationError") {
       const errors = Object.values(error.errors).map(err => err.message);
@@ -211,7 +211,7 @@ export const getProfile = async (req, res) => {
 // Update User Profile
 export const updateProfile = async (req, res) => {
   try {
-    const { nickname, currentSemester, codingSkills, studyPersona, personalDescription } = req.body;
+    const { nickname, currentSemester, codingSkills, studyPersona, personalDescription, partnerProfile } = req.body;
 
     const updateData = {};
     if (nickname !== undefined) updateData.nickname = nickname.trim();
@@ -220,6 +220,27 @@ export const updateProfile = async (req, res) => {
     if (studyPersona !== undefined) updateData.studyPersona = studyPersona;
     if (personalDescription !== undefined) updateData.personalDescription = personalDescription.trim();
 
+    // Accept partnerProfile as JSON string or object to update nested fields
+    if (partnerProfile) {
+      let pp = partnerProfile;
+      if (typeof pp === 'string') {
+        try {
+          pp = JSON.parse(pp);
+        } catch (e) {
+          pp = null;
+        }
+      }
+
+      if (pp) {
+        if (pp.primaryCourses !== undefined) {
+          // set nested array
+          updateData['partnerProfile.primaryCourses'] = Array.isArray(pp.primaryCourses) ? pp.primaryCourses : [];
+        }
+        if (pp.preferredStudyTimes !== undefined) {
+          updateData['partnerProfile.preferredStudyTimes'] = Array.isArray(pp.preferredStudyTimes) ? pp.preferredStudyTimes : [];
+        }
+      }
+    }
     // Handle file upload
     if (req.file) {
       // Delete old profile picture if exists
@@ -230,7 +251,7 @@ export const updateProfile = async (req, res) => {
           fs.unlinkSync(oldFilePath);
         }
       }
-      
+
       // Update with new profile picture path
       updateData.profilePicture = `/uploads/${req.file.filename}`;
     }
@@ -256,7 +277,7 @@ export const updateProfile = async (req, res) => {
 
   } catch (error) {
     console.error("Update profile error:", error);
-    
+
     if (error.name === "ValidationError") {
       const errors = Object.values(error.errors).map(err => err.message);
       return res.status(400).json({

@@ -1,0 +1,115 @@
+/* Dashboard Sidebar Styles */
+
+.sidebar {
+  width: 280px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(59, 130, 246, 0.2);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 0;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* Sidebar States */
+.sidebar-open {
+  width: 280px;
+  transform: translateX(0);
+}
+
+.sidebar-closed {
+  width: 0;
+  transform: translateX(-100%);
+  border-right: none;
+  padding: 0;
+}
+
+.sidebar-closed .nav-item {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.sidebar-closed .sidebar-nav {
+  opacity: 0;
+}
+
+.sidebar-closed .sidebar-footer {
+  opacity: 0;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-item {
+  width: 100%;
+  background: none;
+  border: 1px solid transparent;
+  padding: 0.875rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #4b5563;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  transform: translateX(4px);
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  border-color: transparent;
+}
+
+.nav-icon {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nav-text {
+  font-weight: 500;
+}
+
+.sidebar-footer {
+  padding: 0 1rem;
+  border-top: 1px solid #e9ecef;
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    left: 0;
+    top: 80px;
+    height: calc(100vh - 80px);
+    width: 250px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .sidebar-closed {
+    display: none;
+  }
+}

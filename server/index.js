@@ -1,4 +1,4 @@
-﻿
+
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
@@ -14,6 +14,8 @@ import reminderRoutes from "./routes/reminderRoute.js";
 import codeRoutes from "./routes/codeRoute.js";
 import eventRoutes from "./routes/eventRoute.js";
 import googleClassroomRoutes from "./routes/googleClassroomRoute.js";
+import partnershipRoutes from "./routes/partnershipRoute.js";
+import partnersRoutes from "./routes/partnersRoute.js";
 import resourceRoutes from "./routes/resourceRoute.js";
 import studySessionRoutes from "./routes/studySessionRoute.js";
 import { startAutoSync } from "./services/classroomSyncService.js";
@@ -56,6 +58,8 @@ app.use("/api/reminders", reminderRoutes);
 app.use("/api/codes", codeRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/google-classroom", googleClassroomRoutes);
+app.use("/api/partners", partnersRoutes);
+app.use("/api/partners", partnershipRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/study-sessions", studySessionRoutes);
 

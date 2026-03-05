@@ -2,8 +2,9 @@
 import { useAuth } from "../../context/AuthContext";
 import AvatarBuilder from "./AvatarBuilder";
 import "./profilePage.css";
+import subjects from "../../constants/subjects";
 
-const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigateToProductivity, onNavigateToResources, onNavigateToLanding }) => {
+const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigateToProductivity, onNavigateToResources, onNavigateToLanding, onNavigateToStudyPartners, onNavigateToMyProfile }) => {
   const { user, updateProfile, isLoading, error, clearError, logout } = useAuth();
   const [formData, setFormData] = useState({
     nickname: "",
@@ -14,6 +15,9 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigat
     societyPosition: "",
     profilePicture: null
   });
+  const [selectedSubjects, setSelectedSubjects] = useState([]);
+  const [preferredStudyTime, setPreferredStudyTime] = useState("");
+  const [showSubjectsModal, setShowSubjectsModal] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
@@ -37,6 +41,12 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigat
       if (user.profilePicture) {
         setPreviewImage(user.profilePicture);
       }
+
+      // Load partnerProfile subjects and preferred study time
+      const primary = (user.partnerProfile && user.partnerProfile.primaryCourses) || [];
+      setSelectedSubjects(primary);
+      const pst = (user.partnerProfile && user.partnerProfile.preferredStudyTimes && user.partnerProfile.preferredStudyTimes[0]) || "";
+      setPreferredStudyTime(pst);
     }
   }, [user]);
 
@@ -63,6 +73,27 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigat
       setSuccessMessage("");
     }
   };
+
+  const handleAddSubject = (value) => {
+    const v = (value || "").trim();
+    if (!v) return;
+    if (!selectedSubjects.includes(v)) {
+      setSelectedSubjects((s) => [...s, v]);
+    }
+  };
+
+  const handleRemoveSubject = (value) => {
+    setSelectedSubjects((s) => s.filter((x) => x !== value));
+  };
+
+  // Close modal on Escape
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') setShowSubjectsModal(false);
+    };
+    if (showSubjectsModal) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showSubjectsModal]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -123,7 +154,15 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigat
     }
 
     try {
-      const result = await updateProfile(formData);
+      // Prepare partnerProfile payload
+      const payload = { ...formData };
+      const partnerProfilePayload = {
+        primaryCourses: selectedSubjects,
+        preferredStudyTimes: preferredStudyTime ? [preferredStudyTime] : []
+      };
+      payload.partnerProfile = JSON.stringify(partnerProfilePayload);
+
+      const result = await updateProfile(payload);
       if (result.success) {
         setSuccessMessage("Profile updated successfully!");
         // Navigate to dashboard after a short delay
@@ -196,6 +235,7 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigat
     <div className="profile-page">
       {/* Header */}
       {/* Top Header */}
+      {/* Top Header */}
       <header className="top-header">
         <div className="header-content">
           <div className="logo">
@@ -221,7 +261,7 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigat
               </span>
               Dashboard
             </button>
-            <button className="nav-link">
+            <button className="nav-link" onClick={onNavigateToStudyPartners}>
               <span className="nav-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -259,15 +299,14 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigat
               </span>
               Resources
             </button>
-            <button className="nav-link">
+            <button className="nav-link my-profile-btn active" onClick={onNavigateToMyProfile}>
               <span className="nav-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </span>
-              Ask-A-Senior Assistant
+              My Profile
             </button>
             <button className="nav-link logout-link" onClick={handleLogout}>
               <span className="nav-icon">
@@ -462,6 +501,27 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigat
                     <span className="error-text">{validationErrors.studyPersona}</span>
                   )}
                 </div>
+
+                {/* Preferred Study Time */}
+                <div className="form-group">
+                  <label className="form-label">Preferred Study Time</label>
+                  <div className="select-wrapper">
+                    <select
+                      name="preferredStudyTime"
+                      className="form-select"
+                      value={preferredStudyTime}
+                      onChange={(e) => setPreferredStudyTime(e.target.value)}
+                      disabled={isLoading}
+                    >
+                      <option value="">Select your preferred study time</option>
+                      <option value="morning">Early Bird</option>
+                      <option value="afternoon">Midday Person</option>
+                      <option value="night">Night Owl</option>
+                    </select>
+                    <span className="select-arrow"></span>
+                  </div>
+                  <small className="form-hint">This helps match you with partners who study at similar times.</small>
+                </div>
               </div>
 
               {/* Right Column: Details & Info */}
@@ -539,6 +599,104 @@ const ProfilePage = ({ onNavigateToDashboard, onNavigateToCodingSpace, onNavigat
                   <small className="form-hint">
                     Mention your roles in university clubs or societies.
                   </small>
+                </div>
+
+                {/* Subjects multi-select */}
+                <div className="form-group">
+                  <label className="form-label">Subjects</label>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <input
+                      list="subjects-list"
+                      placeholder="Type or select a subject and press Enter"
+                      onInput={(e) => {
+                        const val = (e.target.value || "").trim();
+                        if (!val) return;
+                        // if value matches a known subject, add it immediately
+                        const match = subjects.find(
+                          (s) => s.toLowerCase() === val.toLowerCase()
+                        );
+                        if (match) {
+                          handleAddSubject(match);
+                          e.target.value = "";
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddSubject(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                      onBlur={(e) => {
+                        // also add on blur
+                        if (e.target.value) {
+                          handleAddSubject(e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                      className="form-input"
+                      disabled={isLoading}
+                      style={{ flex: 1, minWidth: '200px' }}
+                    />
+                    <datalist id="subjects-list">
+                      {subjects.map((s) => (
+                        <option key={s} value={s} />
+                      ))}
+                    </datalist>
+                  </div>
+
+                  <div className="selected-subjects" style={{ marginTop: 8 }}>
+                    {(() => {
+                      // Show only the first 3 subjects as chips; any extras shown as +N
+                      const visible = selectedSubjects.slice(0, 3);
+                      const extraCount = Math.max(0, selectedSubjects.length - 3);
+
+                      return (
+                        <div className="selected-subjects-row">
+                          {visible.map((s) => (
+                            <div key={s} className="subject-chip">
+                              <span className="subject-chip-label" title={s}>{s}</span>
+                              <button type="button" onClick={() => handleRemoveSubject(s)} aria-label={`Remove ${s}`} className="chip-remove">×</button>
+                            </div>
+                          ))}
+
+                          {extraCount > 0 && (
+                            <div
+                              className="subject-chip more-chip"
+                              title={`Click to view all (${selectedSubjects.length})`}
+                              onClick={() => setShowSubjectsModal(true)}
+                              role="button"
+                              tabIndex={0}
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setShowSubjectsModal(true); }}
+                            >
+                              +{extraCount}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {showSubjectsModal && (
+                    <div className="subjects-modal" role="dialog" aria-modal="true">
+                      <div className="subjects-modal__overlay" onClick={() => setShowSubjectsModal(false)} />
+                      <div className="subjects-modal__content">
+                        <div className="subjects-modal__header">
+                          <h3>Selected subjects</h3>
+                          <button type="button" className="modal-close" onClick={() => setShowSubjectsModal(false)}>Close</button>
+                        </div>
+                        <ul className="subject-list">
+                          {selectedSubjects.map((s) => (
+                            <li key={s} className="subject-item">
+                              <span>{s}</span>
+                              <button type="button" className="remove-subject-btn" onClick={() => handleRemoveSubject(s)}>Remove</button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                  <small className="form-hint">Choose one or more subjects you study or want help with.</small>
                 </div>
 
                 {/* Action Buttons */}

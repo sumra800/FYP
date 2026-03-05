@@ -68,9 +68,14 @@
 }
 
 .profile-page .logo-text {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    color: #2563eb !important;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    color: transparent !important;
+    white-space: nowrap;
 }
 
 .nav-links {
@@ -544,7 +549,8 @@
 
 .cancel-btn {
     background: white;
-    color: #2563eb;
+    color: #1e3a8a;
+    /* Keeping text color distinct */
     border: 1px solid rgba(59, 130, 246, 0.3);
     padding: 0.875rem 2rem;
     border-radius: 50px;
@@ -553,11 +559,16 @@
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    /* Added slight shadow to make it pop */
 }
 
 .cancel-btn:hover {
-    background: rgba(59, 130, 246, 0.05);
+    background: #f8fafc;
     border-color: #3b82f6;
+    color: #2563eb;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    /* Hover effect */
 }
 
 .save-btn {
@@ -916,4 +927,172 @@
         padding: 0.75rem 1.75rem;
         font-size: 0.95rem;
     }
+}
+
+/* Subjects Section Styles */
+.selected-subjects {
+    margin-top: 0.5rem;
+}
+
+.selected-subjects-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.subject-chip {
+    display: flex;
+    align-items: center;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 16px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    color: #1e3a8a;
+    transition: all 0.2s ease;
+}
+
+.subject-chip:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+}
+
+.subject-chip-label {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 0.5rem;
+}
+
+.chip-remove {
+    background: transparent;
+    border: none;
+    color: #ef5350;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.chip-remove:hover {
+    background: rgba(239, 83, 80, 0.1);
+}
+
+.more-chip {
+    background: #eff6ff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.more-chip:hover {
+    background: #dbeafe;
+}
+
+/* Subjects Modal */
+.subjects-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subjects-modal__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.subjects-modal__content {
+    position: relative;
+    background: #ffffff;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.subjects-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    background: #eff6ff;
+}
+
+.subjects-modal__header h3 {
+    margin: 0;
+    color: #1e3a8a;
+    font-size: 1.25rem;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: rgba(100, 116, 139, 0.1);
+    color: #1e3a8a;
+}
+
+.subject-list {
+    list-style: none;
+    padding: 1rem;
+    margin: 0;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.subject-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    background: rgba(59, 130, 246, 0.05);
+    color: #1e3a8a;
+    font-weight: 500;
+}
+
+.remove-subject-btn {
+    background: transparent;
+    border: 1px solid rgba(239, 83, 80, 0.3);
+    color: #ef5350;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.remove-subject-btn:hover {
+    background: #ef5350;
+    color: white;
 }

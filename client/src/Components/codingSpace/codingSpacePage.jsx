@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { codeAPI } from "../../services/api";
 import "./codingSpacePage.css";
 
-const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNavigateToResources, onNavigateToLanding }) => {
+const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNavigateToResources, onNavigateToLanding, onNavigateToStudyPartners, onNavigateToMyProfile }) => {
   const { logout, user } = useAuth();
   const [activeTab, setActiveTab] = useState("browse");
   const [codes, setCodes] = useState([]);
@@ -228,6 +228,7 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
   return (
     <div className="coding-space-page">
       {/* Header */}
+      {/* Top Header */}
       <header className="top-header">
         <div className="header-content">
           <div className="logo">
@@ -253,7 +254,7 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
               </span>
               Dashboard
             </button>
-            <button className="nav-link">
+            <button className="nav-link" onClick={onNavigateToStudyPartners}>
               <span className="nav-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -291,15 +292,14 @@ const CodingSpacePage = ({ onNavigateToDashboard, onNavigateToProductivity, onNa
               </span>
               Resources
             </button>
-            <button className="nav-link">
+            <button className="nav-link my-profile-btn" onClick={onNavigateToMyProfile}>
               <span className="nav-icon">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </span>
-              Ask-A-Senior Assistant
+              My Profile
             </button>
             <button className="nav-link logout-link" onClick={handleLogout}>
               <span className="nav-icon">

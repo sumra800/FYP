@@ -12,14 +12,19 @@ import ProductivityPage from "./Components/productivity/productivityPage";
 import CodingSpacePage from "./Components/codingSpace/codingSpacePage";
 import SettingsPage from "./Components/settings/settingsPage";
 import ResourcesPage from "./Components/resources/resourcesPage";
+import MyProfilePage from "./Components/myProfile/myProfilePage";
 import AboutPage from "./Components/about/aboutPage";
 import ContactPage from "./Components/contact/contactPage";
 import FeaturesPage from "./Components/features/featuresPage";
+import PartnerMatchingPage from "./Components/studyPartners/PartnerMatching";
+import Footer from "./Components/common/Footer";
+import EducationalBot from "./Components/common/EducationalBot";
 
 // Main App Component with Authentication Logic
 const AppContent = () => {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [currentPage, setCurrentPage] = useState("landing");
+  const [history, setHistory] = useState([]);
 
   // Update current page based on authentication status
   useEffect(() => {
@@ -38,53 +43,40 @@ const AppContent = () => {
     }
   }, [isAuthenticated, isLoading, user]);
 
-  const navigateToLanding = () => {
-    setCurrentPage("landing");
+  const changePage = (page) => {
+    if (currentPage !== page) {
+      setHistory(prev => [...prev, currentPage]);
+      setCurrentPage(page);
+    }
   };
 
-  const navigateToSignup = () => {
-    setCurrentPage("signup");
+  const navigateBack = () => {
+    setHistory(prev => {
+      if (prev.length === 0) {
+        setCurrentPage("landing");
+        return prev;
+      }
+      const newHistory = [...prev];
+      const lastPage = newHistory.pop();
+      setCurrentPage(lastPage);
+      return newHistory;
+    });
   };
 
-  const navigateToLogin = () => {
-    setCurrentPage("login");
-  };
-
-  const navigateToProfile = () => {
-    setCurrentPage("profile");
-  };
-
-  const navigateToDashboard = () => {
-    setCurrentPage("dashboard");
-  };
-
-  const navigateToProductivity = () => {
-    setCurrentPage("productivity");
-  };
-
-  const navigateToCodingSpace = () => {
-    setCurrentPage("coding-space");
-  };
-
-  const navigateToSettings = () => {
-    setCurrentPage("settings");
-  };
-
-  const navigateToResources = () => {
-    setCurrentPage("resources");
-  };
-
-  const navigateToAbout = () => {
-    setCurrentPage("about");
-  };
-
-  const navigateToContact = () => {
-    setCurrentPage("contact");
-  };
-
-  const navigateToFeatures = () => {
-    setCurrentPage("features");
-  };
+  const navigateToLanding = () => { changePage("landing"); };
+  const navigateToSignup = () => { changePage("signup"); };
+  const navigateToLogin = () => { changePage("login"); };
+  const navigateToProfile = () => { changePage("profile"); };
+  const navigateToMyProfile = () => { changePage("my-profile"); };
+  const navigateToDashboard = () => { changePage("dashboard"); };
+  const navigateToProductivity = () => { changePage("productivity"); };
+  const navigateToCodingSpace = () => { changePage("coding-space"); };
+  const navigateToSettings = () => { changePage("settings"); };
+  const navigateToResources = () => { changePage("resources"); };
+  const navigateToAbout = () => { changePage("about"); };
+  const navigateToContact = () => { changePage("contact"); };
+  const navigateToFeatures = () => { changePage("features"); };
+  const navigateToStudyPartners = () => { changePage("study-partners"); };
 
   // Show loading spinner while checking authentication
   if (isLoading) {
@@ -127,16 +119,29 @@ const AppContent = () => {
         />
       )}
       {currentPage === "about" && (
-        <AboutPage onNavigateToLanding={navigateToLanding} />
+        <AboutPage onNavigateToLanding={navigateToLanding} onNavigateBack={navigateBack} />
       )}
       {currentPage === "contacts" && (
-        <ContactPage onNavigateToLanding={navigateToLanding} />
+        <ContactPage onNavigateToLanding={navigateToLanding} onNavigateBack={navigateBack} />
       )}
       {currentPage === "contact" && (
-        <ContactPage onNavigateToLanding={navigateToLanding} />
+        <ContactPage onNavigateToLanding={navigateToLanding} onNavigateBack={navigateBack} />
       )}
       {currentPage === "features" && (
-        <FeaturesPage onNavigateToLanding={navigateToLanding} />
+        <FeaturesPage onNavigateToLanding={navigateToLanding} onNavigateBack={navigateBack} />
+      )}
+      {currentPage === "study-partners" && (
+        <PartnerMatchingPage
+          onNavigateToDashboard={navigateToDashboard}
+          onNavigateToProfile={navigateToProfile}
+          onNavigateToCodingSpace={navigateToCodingSpace}
+          onNavigateToProductivity={navigateToProductivity}
+          onNavigateToResources={navigateToResources}
+          onNavigateToSettings={navigateToSettings}
+          onNavigateToLanding={navigateToLanding}
+          onNavigateToAskSenior={() => { }}
+          onNavigateToMyProfile={navigateToMyProfile}
+        />
       )}
       {currentPage === "profile" && (
         <ProfilePage
@@ -145,16 +150,18 @@ const AppContent = () => {
           onNavigateToProductivity={navigateToProductivity}
           onNavigateToResources={navigateToResources}
           onNavigateToLanding={navigateToLanding}
+          onNavigateToStudyPartners={navigateToStudyPartners}
+          onNavigateToMyProfile={navigateToMyProfile}
         />
       )}
       {currentPage === "dashboard" && (
-        <DashboardPage onNavigateToProfile={navigateToProfile} onNavigateToProductivity={navigateToProductivity} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToSettings={navigateToSettings} onNavigateToResources={navigateToResources} onNavigateToLanding={navigateToLanding} />
+        <DashboardPage onNavigateToProfile={navigateToProfile} onNavigateToProductivity={navigateToProductivity} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToSettings={navigateToSettings} onNavigateToResources={navigateToResources} onNavigateToLanding={navigateToLanding} onNavigateToStudyPartners={navigateToStudyPartners} onNavigateToMyProfile={navigateToMyProfile} />
       )}
       {currentPage === "productivity" && (
-        <ProductivityPage onNavigateToDashboard={navigateToDashboard} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToResources={navigateToResources} onNavigateToLanding={navigateToLanding} />
+        <ProductivityPage onNavigateToDashboard={navigateToDashboard} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToResources={navigateToResources} onNavigateToLanding={navigateToLanding} onNavigateToStudyPartners={navigateToStudyPartners} onNavigateToMyProfile={navigateToMyProfile} />
       )}
       {currentPage === "coding-space" && (
-        <CodingSpacePage onNavigateToDashboard={navigateToDashboard} onNavigateToProductivity={navigateToProductivity} onNavigateToResources={navigateToResources} onNavigateToLanding={navigateToLanding} />
+        <CodingSpacePage onNavigateToDashboard={navigateToDashboard} onNavigateToProductivity={navigateToProductivity} onNavigateToResources={navigateToResources} onNavigateToLanding={navigateToLanding} onNavigateToStudyPartners={navigateToStudyPartners} onNavigateToMyProfile={navigateToMyProfile} />
       )}
       {currentPage === "settings" && (
         <SettingsPage
@@ -166,8 +173,34 @@ const AppContent = () => {
           onNavigateToLanding={navigateToLanding}
         />
       )}
+      {currentPage === "my-profile" && (
+        <MyProfilePage
+          onNavigateToCustomizeProfile={navigateToProfile}
+          onNavigateToDashboard={navigateToDashboard}
+          onNavigateToCodingSpace={navigateToCodingSpace}
+          onNavigateToProductivity={navigateToProductivity}
+          onNavigateToResources={navigateToResources}
+          onNavigateToLanding={navigateToLanding}
+          onNavigateToStudyPartners={navigateToStudyPartners}
+        />
+      )}
       {currentPage === "resources" && (
-        <ResourcesPage onNavigateToDashboard={navigateToDashboard} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToProductivity={navigateToProductivity} onNavigateToLanding={navigateToLanding} />
+        <ResourcesPage onNavigateToDashboard={navigateToDashboard} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToProductivity={navigateToProductivity} onNavigateToLanding={navigateToLanding} onNavigateToStudyPartners={navigateToStudyPartners} onNavigateToMyProfile={navigateToMyProfile} />
+      )}
+
+      {/* global footer on all pages except landing, login, signup */}
+      {!["landing", "login", "signup"].includes(currentPage) && (
+        <Footer
+          onNavigateToAbout={navigateToAbout}
+          onNavigateToFeatures={navigateToFeatures}
+          onNavigateToContact={navigateToContact}
+          onNavigateToLanding={navigateToLanding}
+        />
+      )}
+
+      {/* Educational Bot - Available on all authenticated pages */}
+      {!["landing", "login", "signup"].includes(currentPage) && (
+        <EducationalBot />
       )}
     </div>
   );

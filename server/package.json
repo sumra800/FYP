@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.2",
     "multer": "^2.0.2",
+    "munkres": "^2.0.4",
     "node-cron": "^3.0.3"
   },
   "devDependencies": {

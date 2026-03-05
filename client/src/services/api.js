@@ -1,4 +1,4 @@
-﻿// API Base URL - Update this to match your server
+// API Base URL - Update this to match your server
 const API_BASE_URL = 'http://localhost:7000/api';
 
 // Helper function to get auth token from localStorage
@@ -555,6 +555,58 @@ export const resourceAPI = {
   },
 };
 
+// Partnership/matching API functions
+export const partnershipAPI = {
+  // Query for potential matches based on filters (intention, minScore, subject, etc)
+  getMatches: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters).toString();
+    return await apiRequest(`/partners/matches${queryParams ? `?${queryParams}` : ''}`, {
+      method: 'GET',
+    });
+  },
+  // Send a connection request to another user
+  sendRequest: async (recipientId, hangoutIntention = "") => {
+    return await apiRequest(`/partners/request`, {
+      method: 'POST',
+      body: JSON.stringify({ recipientId, hangoutIntention }),
+    });
+  },
+};
+
+// Partners management API (your own partnerships)
+export const partnersAPI = {
+  // Get all partnerships involving the current user (pending + approved)
+  getMyPartnerships: async () => {
+    return await apiRequest('/partners/my-partnerships', { method: 'GET' });
+  },
+  // Get only approved connections
+  getApprovedPartners: async () => {
+    return await apiRequest('/partners/approved', { method: 'GET' });
+  },
+  approvePartnership: async (id) => {
+    return await apiRequest(`/partners/${id}/approve`, { method: 'PUT' });
+  },
+  rejectPartnership: async (id) => {
+    return await apiRequest(`/partners/${id}/reject`, { method: 'PUT' });
+  },
+  withdrawPartnership: async (id) => {
+    return await apiRequest(`/partners/${id}/withdraw`, { method: 'PUT' });
+  },
+};
+
+// Deprecated: partnerAPI - use partnershipAPI instead
+export const partnerAPI = {
+  getMatches: async (filters = {}) => {
+    return partnershipAPI.getMatches(filters);
+  },
+  updateProfile: async (profileData = {}) => {
+    const queryParams = new URLSearchParams(profileData).toString();
+    return await apiRequest("/partnerships/profile?" + queryParams, {
+      method: "PUT",
+      body: JSON.stringify(profileData),
+        });
+  },
+};
 // Study Session API functions
 export const studySessionAPI = {
   // Create a new study session

@@ -182,52 +182,6 @@ const LoginPage = ({ onNavigateToSignup, onNavigateToLanding, onNavigateToAbout,
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-section">
-            <div className="footer-logo">
-              <div className="footer-logo-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="#fbbf24" fill="none" />
-                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" fill="#fbbf24" stroke="#f59e0b" />
-                  <line x1="10" y1="8" x2="16" y2="8" stroke="white" strokeWidth="1.5" />
-                  <line x1="10" y1="12" x2="16" y2="12" stroke="white" strokeWidth="1.5" />
-                  <line x1="10" y1="16" x2="14" y2="16" stroke="white" strokeWidth="1.5" />
-                </svg>
-              </div>
-              <span className="footer-logo-text">Study Buddy</span>
-            </div>
-            <p className="footer-description">
-              Your AI-powered study companion for collaborative learning and academic success.
-            </p>
-          </div>
-
-          <div className="footer-section">
-            <h3 className="footer-heading">Quick Links</h3>
-            <ul className="footer-links">
-              <li className="footer-link" onClick={onNavigateToLanding}>Home</li>
-              <li className="footer-link" onClick={onNavigateToAbout}>About</li>
-              <li className="footer-link" onClick={onNavigateToFeatures}>Features</li>
-              <li className="footer-link" onClick={onNavigateToContact}>Contact</li>
-            </ul>
-          </div>
-
-          <div className="footer-section">
-            <h3 className="footer-heading">Account</h3>
-            <ul className="footer-links">
-              <li className="footer-link" onClick={onNavigateToSignup}>Sign Up</li>
-              <li className="footer-link">Help</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="footer-bottom">
-          <p className="footer-copyright">
-            © {new Date().getFullYear()} Study Buddy. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };

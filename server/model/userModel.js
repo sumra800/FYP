@@ -66,6 +66,59 @@ const userSchema = new mongoose.Schema({
     type: String, // Store the file path or URL
     default: null
   },
+   partnerProfile: {
+    isVisible: {
+      type: Boolean,
+      default: true
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxLength: [600, "Bio cannot exceed 600 characters"]
+    },
+    primaryCourses: {
+      type: [String],
+      default: [],
+      set: (courses) => courses.map(course => course.trim()).filter(Boolean)
+    },
+    focusAreas: {
+      type: [String],
+      default: [],
+      set: (areas) => areas.map(area => area.trim()).filter(Boolean)
+    },
+    preferredLearningStyle: {
+      type: String,
+      enum: ["visual", "auditory", "kinesthetic", "reading", "any"],
+      default: "any"
+    },
+    preferredStudyTimes: {
+      type: [String],
+      default: []
+    },
+    collaborationStyle: {
+      type: String,
+      enum: ["structured", "casual", "accountability", "any"],
+      default: "any"
+    },
+    timezone: {
+      type: String,
+      trim: true
+    },
+    communicationTools: {
+      type: [String],
+      default: [],
+      set: (tools) => tools.map(tool => tool.trim()).filter(Boolean)
+    },
+    experienceLevel: {
+      type: String,
+      enum: ["freshman", "sophomore", "junior", "senior", "graduate", "professional", "other"],
+      default: "other"
+    },
+    lastMatchedAt: {
+      type: Date,
+      default: null
+    }
+  },
   // Scoring system
   score: {
     type: Number,
