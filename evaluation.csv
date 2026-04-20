@@ -1,0 +1,7 @@
+course,topic,question,expected_answer
+Information Security,Introduction,"What is information security?","Information security refers to the protection of information from unauthorized access, modification, disruption, or destruction."
+Information Security,Cryptography,"Define encryption.","Encryption is the process of converting plaintext into ciphertext to prevent unauthorized access."
+Professional Practices in IT,Ethics,"What is professional ethics in IT?","Professional ethics in IT refers to the moral principles and standards that guide behavior and decision-making for IT professionals."
+Professional Practices in IT,Software Licensing,"Explain what a software license is.","A software license is a legal agreement that outlines how software can be used, distributed, or modified."
+Theory of Automata,Finite Automata,"What is a finite automaton?","A finite automaton is a mathematical model of computation consisting of states and transitions used to recognize regular languages."
+Theory of Automata,Grammar,"Define a context-free grammar.","A context-free grammar is a set of production rules used to generate strings in a context-free language."
