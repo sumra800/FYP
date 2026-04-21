@@ -1,8 +1,8 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import "./loginPage.css";
 
-const LoginPage = ({ onNavigateToSignup, onNavigateToLanding, onNavigateToAbout, onNavigateToContact, onNavigateToFeatures }) => {
+const LoginPage = ({ onNavigateToSignup, onNavigateToLanding, onNavigateToAbout, onNavigateToContact, onNavigateToFeatures, onNavigateToRecovery }) => {
   const { login, isLoading, error, clearError } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
@@ -156,7 +156,7 @@ const LoginPage = ({ onNavigateToSignup, onNavigateToLanding, onNavigateToAbout,
                 <input type="checkbox" disabled={isLoading} />
                 <span>Remember me</span>
               </label>
-              <a href="#forgot" className="forgot-password">Forgot your password?</a>
+              <span className="forgot-password" onClick={onNavigateToRecovery} style={{ cursor: 'pointer' }}>Forgot your password?</span>
             </div>
 
             <button

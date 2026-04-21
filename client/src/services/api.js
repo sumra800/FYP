@@ -647,4 +647,29 @@ export const studySessionAPI = {
   },
 };
 
+// Chat API functions
+export const chatAPI = {
+  // Get chat history
+  getChatHistory: async () => {
+    return await apiRequest('/chat', {
+      method: 'GET',
+    });
+  },
+
+  // Save chat history
+  saveChatHistory: async (messages) => {
+    return await apiRequest('/chat', {
+      method: 'POST',
+      body: JSON.stringify({ messages }),
+    });
+  },
+
+  // Clear chat history
+  clearChatHistory: async () => {
+    return await apiRequest('/chat/clear', {
+      method: 'DELETE',
+    });
+  }
+};
+
 export default userAPI;

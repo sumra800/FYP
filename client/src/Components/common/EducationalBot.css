@@ -145,7 +145,12 @@
     box-shadow: 0 0 5px #4ade80;
 }
 
-.bot-close-btn {
+.bot-chat-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.bot-action-btn {
     background: rgba(255, 255, 255, 0.1);
     border: none;
     color: white;
@@ -159,9 +164,9 @@
     transition: all 0.2s ease;
 }
 
-.bot-close-btn:hover {
+.bot-action-btn:hover {
     background: rgba(255, 255, 255, 0.25);
-    transform: rotate(90deg);
+    transform: scale(1.1);
 }
 
 /* Chat Messages Area */
@@ -392,4 +397,112 @@
         bottom: 20px;
         right: 20px;
     }
+}
+
+/* --- Interactive Flashcards --- */
+.message-with-flashcards {
+    display: flex;
+    flex-direction: column;
+}
+
+.flashcards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.chat-flashcard {
+    background-color: transparent;
+    width: 100%;
+    perspective: 1000px; /* 3D effect */
+    cursor: pointer;
+}
+
+.chat-flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+    display: grid; /* Allows auto height based on content */
+}
+
+.chat-flashcard.flipped .chat-flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.chat-flashcard-front, .chat-flashcard-back {
+    grid-area: 1 / 1 / 2 / 2;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.chat-flashcard-front {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    color: #1e293b;
+    z-index: 2;
+}
+
+.chat-flashcard-back {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #1e3a8a;
+    transform: rotateY(180deg);
+}
+
+.flashcard-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    opacity: 0.6;
+    margin-bottom: 8px;
+}
+
+.flashcard-hint {
+    font-size: 0.65rem;
+    opacity: 0.5;
+    margin-top: 12px;
+    font-style: italic;
+}
+
+.chat-flashcard p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+/* --- Maximize State --- */
+.educational-bot-container.maximized {
+    bottom: 0;
+    right: 0;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.bot-chat-window.maximized {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+}
+
+.bot-chat-window.maximized .bot-chat-header {
+    border-radius: 0;
+}
+
+.bot-chat-window.maximized .bot-chat-input-area {
+    border-radius: 0;
 }

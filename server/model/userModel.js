@@ -1,4 +1,4 @@
-﻿import mongoose from "mongoose";
+import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
@@ -147,6 +147,15 @@ const userSchema = new mongoose.Schema({
       type: Date,
       default: null
     }
+  },
+  // Reset Password Fields
+  resetPasswordToken: {
+    type: String,
+    default: null
+  },
+  resetPasswordExpires: {
+    type: Date,
+    default: null
   },
   // Timestamps
   createdAt: {

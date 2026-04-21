@@ -2,16 +2,26 @@
 // this file is imported by PartnerMatching.jsx and by Subjects.jsx
 
 const subjects = [
-  "Mathematics",
-  "Physics",
-  "Chemistry",
-  "Biology",
-  "Computer Science",
-  "Economics",
-  "History",
-  "English",
-  "Statistics",
-  "Psychology",
+  "Prograamming Fundamentals",
+  "Data Structures and Algorithms",
+  "Object Oriented Programming",
+  "Software Engineering",
+  "Database Systems",
+  "Computer Networks",
+  "Web Engineering",
+  "Artificial Intelligence",
+  "Machine Learning",
+  "Data Science",
+  "Cyber Security",
+  "Cloud Computing",
+  "Operating Systems",
+  "Digital Logic and Design",
+  "Computer Architecture",
+  "Discrete Mathematics",
+  "Linear Algebra",
+  "Calculus",
+  "Probability and Statistics",
+  "Professional Practice"
 ];
 
 export default subjects;

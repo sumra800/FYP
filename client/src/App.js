@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import "./App.css";
 import "./styles/theme.css";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -7,6 +7,8 @@ import LandingPage from "./Components/landing/landingPage";
 import LoginPage from "./Components/login/loginPage";
 import SignupPage from "./Components/signup/signupPage";
 import ProfilePage from "./Components/profile/profilePage";
+import RecoveryPage from "./Components/login/RecoveryPage";
+import ResetPasswordPage from "./Components/login/ResetPasswordPage";
 import DashboardPage from "./Components/dashboard/dashboardPage";
 import ProductivityPage from "./Components/productivity/productivityPage";
 import CodingSpacePage from "./Components/codingSpace/codingSpacePage";
@@ -37,8 +39,12 @@ const AppContent = () => {
           setCurrentPage("dashboard");
         }
       } else {
-        // Keep landing page for unauthenticated users
-        setCurrentPage("landing");
+        // Keep landing page for unauthenticated users, unless on reset-password
+        if (window.location.pathname.startsWith("/reset-password/")) {
+          setCurrentPage("reset-password");
+        } else if (currentPage !== "recovery" && currentPage !== "signup" && currentPage !== "login") {
+          setCurrentPage("landing");
+        }
       }
     }
   }, [isAuthenticated, isLoading, user]);
@@ -77,6 +83,8 @@ const AppContent = () => {
   const navigateToContact = () => { changePage("contact"); };
   const navigateToFeatures = () => { changePage("features"); };
   const navigateToStudyPartners = () => { changePage("study-partners"); };
+  const navigateToRecovery = () => { changePage("recovery"); };
+  const navigateToResetPassword = () => { changePage("reset-password"); };
 
   // Show loading spinner while checking authentication
   if (isLoading) {
@@ -106,6 +114,19 @@ const AppContent = () => {
           onNavigateToAbout={navigateToAbout}
           onNavigateToContact={navigateToContact}
           onNavigateToFeatures={navigateToFeatures}
+          onNavigateToRecovery={navigateToRecovery}
+        />
+      )}
+      {currentPage === "recovery" && (
+        <RecoveryPage
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToLanding={navigateToLanding}
+        />
+      )}
+      {currentPage === "reset-password" && (
+        <ResetPasswordPage
+          onNavigateToLogin={navigateToLogin}
+          onNavigateToLanding={navigateToLanding}
         />
       )}
       {currentPage === "signup" && (
@@ -188,18 +209,20 @@ const AppContent = () => {
         <ResourcesPage onNavigateToDashboard={navigateToDashboard} onNavigateToCodingSpace={navigateToCodingSpace} onNavigateToProductivity={navigateToProductivity} onNavigateToLanding={navigateToLanding} onNavigateToStudyPartners={navigateToStudyPartners} onNavigateToMyProfile={navigateToMyProfile} />
       )}
 
-      {/* global footer on all pages except landing, login, signup */}
-      {!["landing", "login", "signup"].includes(currentPage) && (
+      {/* global footer on all pages except landing, login, signup, recovery, reset-password */}
+      {!["landing", "login", "signup", "recovery", "reset-password"].includes(currentPage) && (
         <Footer
           onNavigateToAbout={navigateToAbout}
           onNavigateToFeatures={navigateToFeatures}
           onNavigateToContact={navigateToContact}
           onNavigateToLanding={navigateToLanding}
+          onNavigateToSignup={navigateToSignup}
+          onNavigateToLogin={navigateToLogin}
         />
       )}
 
       {/* Educational Bot - Available on all authenticated pages */}
-      {!["landing", "login", "signup"].includes(currentPage) && (
+      {!["landing", "login", "signup", "recovery", "reset-password"].includes(currentPage) && (
         <EducationalBot />
       )}
     </div>

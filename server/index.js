@@ -18,6 +18,7 @@ import partnershipRoutes from "./routes/partnershipRoute.js";
 import partnersRoutes from "./routes/partnersRoute.js";
 import resourceRoutes from "./routes/resourceRoute.js";
 import studySessionRoutes from "./routes/studySessionRoute.js";
+import chatRoutes from "./routes/chatRoute.js";
 import { startAutoSync } from "./services/classroomSyncService.js";
 
 const app = express();
@@ -62,6 +63,7 @@ app.use("/api/partners", partnersRoutes);
 app.use("/api/partners", partnershipRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/study-sessions", studySessionRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Basic route
 app.get("/", (req, res) => {

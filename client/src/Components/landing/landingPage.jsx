@@ -32,18 +32,12 @@ const LandingPage = ({ onNavigateToSignup, onNavigateToLogin, onNavigateToAbout,
       resetPupil(rightPupilRef.current);
     }
 
-    picture.addEventListener("mousemove", handleMove);
-    picture.addEventListener("touchmove", handleMove, { passive: true });
-    picture.addEventListener("mouseleave", handleLeave);
-    picture.addEventListener("touchend", handleLeave);
-    picture.addEventListener("touchcancel", handleLeave);
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("touchmove", handleMove, { passive: true });
 
     return () => {
-      picture.removeEventListener("mousemove", handleMove);
-      picture.removeEventListener("touchmove", handleMove);
-      picture.removeEventListener("mouseleave", handleLeave);
-      picture.removeEventListener("touchend", handleLeave);
-      picture.removeEventListener("touchcancel", handleLeave);
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("touchmove", handleMove);
     };
   }, []);
 
